@@ -18,7 +18,7 @@ export const DiceRoll = type({
 	timestamp: "number",
 	fatigueCost: "number?",
 	characterName: "string?",
-	comebackUsed: "number?",
+	comebackUsed: "(number | undefined)?",
 })
 
 function calculateSuccesses(value: number): number {
@@ -218,7 +218,11 @@ export function DicePanel({
 					</div>
 
 					<div className="flex items-center gap-2">
-						<SolidButton type="submit" autoFocus>
+						<SolidButton
+							type="submit"
+							autoFocus
+							className="flex-1 justify-center"
+						>
 							<Icon icon="mingcute:box-3-fill" className="size-5" />
 							<span>Roll {store.count + store.comeback} dice</span>
 						</SolidButton>
