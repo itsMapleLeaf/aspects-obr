@@ -25,6 +25,7 @@ import { OptionCard } from "./ui/OptionCard.tsx"
 import { SelectField } from "./ui/SelectField.tsx"
 import { SmallSolidButton } from "./ui/SmallSolidButton.tsx"
 import { SolidButton } from "./ui/SolidButton.tsx"
+import { SubmitTextArea } from "./ui/SubmitTextArea.tsx"
 import { ToggleSection } from "./ui/ToggleSection.tsx"
 import { Tooltip } from "./ui/Tooltip.tsx"
 
@@ -194,7 +195,21 @@ export function CharacterEditor({
 			</div>
 
 			<ToggleSection title="Actions">
-				<ActionsList character={character} onRollAction={onRollAction} />
+				<div className="mt-4">
+					<ActionsList character={character} onRollAction={onRollAction} />
+				</div>
+			</ToggleSection>
+
+			<ToggleSection title="Details">
+				<p className="mb-4 text-sm font-medium text-pretty text-gray-300">
+					Add any additional details about your character, such as their
+					backstory, personality, etc.
+				</p>
+				<SubmitTextArea
+					className="field-sizing-content w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 py-1.5 transition focus:border-gray-700 focus:outline-none"
+					value={character.details ?? ""}
+					onSubmitValue={(details) => onUpdate({ details })}
+				/>
 			</ToggleSection>
 
 			<ToggleSection

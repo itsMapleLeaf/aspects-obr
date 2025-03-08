@@ -20,6 +20,7 @@ export const Character = type({
 	"role?": "string | null",
 	"drive?": "string | null",
 	"experiences?": CharacterExperience.array(),
+	"details?": "string",
 	"strengthBonus": "number = 0",
 	"senseBonus": "number = 0",
 	"dexterityBonus": "number = 0",
