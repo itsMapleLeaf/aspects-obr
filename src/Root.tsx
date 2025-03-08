@@ -8,10 +8,10 @@ import { ActionsList } from "./ActionsList.tsx"
 import { CharacterEditor } from "./CharacterEditor.tsx"
 import { CharacterListActions } from "./CharacterListActions.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
+import { useDicePanelStore } from "./DicePanel.store.ts"
 import {
 	DicePanel,
 	DiceRoll as DiceRollSchema,
-	useDicePanelStore,
 	type DiceRoll,
 } from "./DicePanel.tsx"
 import { ToggleSection } from "./ToggleSection.tsx"

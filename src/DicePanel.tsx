@@ -1,10 +1,10 @@
 import * as Ariakit from "@ariakit/react"
 import { type } from "arktype"
-import { useState } from "react"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { Character } from "./character.ts"
+import type { DicePanelStore } from "./DicePanel.store.ts"
 
 export type DiceRoll = typeof DiceRoll.inferOut
 export const DiceRoll = type({
@@ -48,38 +48,6 @@ function getDieIcon(value: number): React.ReactNode {
 				<span className="absolute font-semibold">{value}</span>
 			</div>
 		)
-	}
-}
-
-export type DicePanelStore = ReturnType<typeof useDicePanelStore>
-export function useDicePanelStore() {
-	const [count, setCount] = useState(1)
-	const [label, setLabel] = useState("")
-	const [fatigue, setFatigue] = useState(0)
-	const [comeback, setComeback] = useState(0)
-	const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
-		null,
-	)
-
-	function reset() {
-		setCount(1)
-		setLabel("")
-		setFatigue(0)
-		setComeback(0)
-	}
-
-	return {
-		count,
-		setCount,
-		label,
-		setLabel,
-		fatigue,
-		setFatigue,
-		comeback,
-		setComeback,
-		selectedCharacterId,
-		setSelectedCharacterId,
-		reset,
 	}
 }
 
@@ -233,7 +201,10 @@ export function DicePanel({
 								<div className="flex-1">
 									<label className="mb-1 block text-sm font-medium">
 										{store.selectedCharacterId
-											? `Comeback / ${characters.get(store.selectedCharacterId)?.comeback || 0}`
+											? `Comeback / ${
+													characters.get(store.selectedCharacterId)?.comeback ||
+													0
+												}`
 											: "Comeback"}
 									</label>
 									<input
