@@ -8,14 +8,14 @@ import type { DicePanelStore } from "./DicePanel.store.ts"
 
 export type DiceRoll = typeof DiceRoll.inferOut
 export const DiceRoll = type({
-	"id": "string",
-	"label": "string",
-	"diceCount": "number",
-	"results": "number[]",
-	"timestamp": "number",
-	"fatigueCost?": "number",
-	"characterName?": "string | null",
-	"comebackUsed?": "number",
+	id: "string",
+	label: "string",
+	diceCount: "number",
+	results: "number[]",
+	timestamp: "number",
+	fatigueCost: "number?",
+	characterName: "string?",
+	comebackUsed: "number?",
 })
 
 function calculateSuccesses(value: number): number {
