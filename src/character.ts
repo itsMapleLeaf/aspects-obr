@@ -1,5 +1,12 @@
 import { type } from "arktype"
-import { experiences, lineages, roles } from "./data.ts"
+import { aspects, attributes, experiences, lineages, roles } from "./data.ts"
+
+export type CustomExperience = typeof CustomExperience.inferOut
+export const CustomExperience = type({
+	description: "string",
+	attributeIds: "string[]",
+	aspectId: "string",
+})
 
 export type Character = typeof Character.inferOut
 export const Character = type({
@@ -13,6 +20,7 @@ export const Character = type({
 	"role?": "string | null",
 	"drive?": "string | null",
 	"experiences?": "string[]",
+	"customExperiences?": CustomExperience.array(),
 	"strengthBonus": "number = 0",
 	"senseBonus": "number = 0",
 	"dexterityBonus": "number = 0",
@@ -33,6 +41,7 @@ export function createCharacter(name: string): Character {
 		hits: 0,
 		fatigue: 0,
 		comeback: 0,
+		customExperiences: [],
 		strengthBonus: 0,
 		senseBonus: 0,
 		dexterityBonus: 0,
@@ -108,6 +117,26 @@ export function getComputedCharacter(character: Character): ComputedCharacter {
 					}
 				}
 			}
+		}
+	}
+
+	if (character.customExperiences) {
+		for (const experience of character.customExperiences) {
+			for (const attributeId of experience.attributeIds) {
+				const attribute = attributes[attributeId as keyof typeof attributes]
+				if (!attribute) continue
+
+				const attributeName = attribute.name.toLowerCase()
+				stats[attributeName as keyof typeof stats] += 1
+			}
+
+			if (!experience.aspectId) continue
+
+			const aspect = aspects[experience.aspectId as keyof typeof aspects]
+			if (!aspect) continue
+
+			const aspectName = aspect.name.toLowerCase()
+			stats[aspectName as keyof typeof stats] += 2
 		}
 	}
 
