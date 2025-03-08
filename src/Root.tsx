@@ -234,8 +234,10 @@ function ExtensionClientView() {
 
 		const characterText = character ? `${character.name} rolled ` : ""
 
+		const diceText = results.join(", ")
+
 		await broadcastNotification({
-			text: `${characterText}${label || "Dice Roll"} — ${successText}`,
+			text: `${characterText}${label || "Dice Roll"} — ${successText} (${diceText})`,
 			variant: isSuccess ? "SUCCESS" : "DEFAULT",
 		})
 	}
