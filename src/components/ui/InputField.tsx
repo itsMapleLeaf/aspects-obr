@@ -21,7 +21,12 @@ export function InputField({
 	return (
 		<Field label={label} className={className} htmlFor={props.id ?? id}>
 			{onSubmitValue ? (
-				<SubmitInput {...props} id={props.id ?? id} className={inputClass} />
+				<SubmitInput
+					{...props}
+					id={props.id ?? id}
+					className={inputClass}
+					onSubmitValue={onSubmitValue}
+				/>
 			) : (
 				<input {...props} id={props.id ?? id} className={inputClass} />
 			)}
