@@ -4,20 +4,20 @@ import { useEffect, useState, type ReactNode } from "react"
 import { twMerge } from "tailwind-merge"
 import { ContentState } from "~/components/ui/ContentState.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
-import { ActionsList } from "./ActionsList.tsx"
-import { CharacterEditor } from "./CharacterEditor.tsx"
-import { CharacterListActions } from "./CharacterListActions.tsx"
-import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
-import { useDicePanelStore } from "./DicePanel.store.ts"
+import { Character, createCharacter } from "./character.ts"
+import { ActionsList } from "./components/ActionsList.tsx"
+import { CharacterEditor } from "./components/CharacterEditor.tsx"
+import { CharacterListActions } from "./components/CharacterListActions.tsx"
+import { CharacterResourceFields } from "./components/CharacterResourceFields.tsx"
+import { useDicePanelStore } from "./components/DicePanel.store.ts"
 import {
 	DicePanel,
 	DiceRoll as DiceRollSchema,
 	type DiceRoll,
-} from "./DicePanel.tsx"
-import { ToggleSection } from "./ToggleSection.tsx"
-import { Character, createCharacter } from "./character.ts"
+} from "./components/DicePanel.tsx"
+import { ToggleSection } from "./components/ui/ToggleSection.tsx"
 import { owlbearExtensionNamespace } from "./extension.ts"
-import { usePlayer } from "./hooks.tsx"
+import { usePlayer } from "./hooks/obr.ts"
 import { broadcastNotification } from "./notifications.ts"
 
 const metadataCharactersKey = `${owlbearExtensionNamespace}/characters`

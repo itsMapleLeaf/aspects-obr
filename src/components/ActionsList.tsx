@@ -1,9 +1,9 @@
 import { groupBy } from "es-toolkit"
 import { twMerge } from "tailwind-merge"
 import { Button } from "~/components/ui/Button.tsx"
-import type { Character } from "./character.ts"
-import { getComputedCharacter } from "./character.ts"
-import { actions, aspectSkills, aspects, attributes } from "./data.ts"
+import type { Character } from "../character.ts"
+import { getComputedCharacter } from "../character.ts"
+import { actions, aspectSkills, aspects, attributes } from "../data.ts"
 
 interface ActionsListProps {
 	character: Character

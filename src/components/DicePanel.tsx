@@ -3,8 +3,11 @@ import { type } from "arktype"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
-import { Character } from "./character.ts"
+import { Character } from "../character.ts"
 import type { DicePanelStore } from "./DicePanel.store.ts"
+import { Dialog, DialogButton, DialogPanel } from "./ui/Dialog.tsx"
+import { InputField } from "./ui/InputField.tsx"
+import { SelectField } from "./ui/SelectField.tsx"
 
 export type DiceRoll = typeof DiceRoll.inferOut
 export const DiceRoll = type({
@@ -105,32 +108,16 @@ export function DicePanel({
 	}
 
 	return (
-		<Ariakit.DialogProvider open={isOpen} setOpen={setOpen}>
-			<Ariakit.DialogDisclosure
+		<Dialog open={isOpen} setOpen={setOpen}>
+			<DialogButton
 				type="button"
 				className="hover:text-primary-300 fixed right-4 bottom-4 flex size-14 items-center justify-center rounded-full border border-gray-800 bg-gray-900 shadow-lg transition hover:border-gray-700"
 				title="Show dice roller"
 			>
 				<Icon icon="mingcute:box-3-fill" className="size-8" />
-			</Ariakit.DialogDisclosure>
+			</DialogButton>
 
-			<Ariakit.Dialog
-				portal
-				unmountOnHide
-				backdrop={
-					<div className="fixed inset-0 bg-black/50 backdrop-blur-sm" />
-				}
-				className="fixed top-1/2 left-1/2 flex h-dvh max-h-[720px] w-dvw max-w-xl -translate-x-1/2 -translate-y-1/2 flex-col gap-4 rounded-lg border border-gray-800 bg-gray-950 p-4 shadow-lg"
-			>
-				<header className="flex items-center justify-between">
-					<Ariakit.DialogHeading className="heading-2xl">
-						Dice Roller
-					</Ariakit.DialogHeading>
-					<Ariakit.DialogDismiss className="hover:text-primary-300 rounded p-1 transition">
-						<Icon icon="mingcute:close-fill" className="size-6" />
-					</Ariakit.DialogDismiss>
-				</header>
-
+			<DialogPanel title="Dice Roller">
 				<form
 					className="flex flex-col gap-2"
 					action={() => {
@@ -140,109 +127,94 @@ export function DicePanel({
 					}}
 				>
 					<div className="flex gap-2">
-						<div className="flex-1">
-							<label className="mb-1 block text-sm font-medium">Label</label>
-							<input
-								type="text"
-								value={store.label}
-								onChange={(e) => store.setLabel(e.target.value)}
-								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
-								placeholder="Strength Check, Attack Roll, etc."
-							/>
-						</div>
+						<InputField
+							label="Label"
+							className="flex-1"
+							type="text"
+							value={store.label}
+							onChange={(e) => store.setLabel(e.target.value)}
+							onSubmitValue={(value) => store.setLabel(value)}
+							placeholder="Strength Check, Attack Roll, etc."
+						/>
 					</div>
 
-					<div>
-						<label className="mb-1 block text-sm font-medium">Character</label>
-						<select
-							value={store.selectedCharacterId ?? ""}
-							onChange={(e) => {
-								const value = e.target.value
-								store.setSelectedCharacterId(value === "" ? null : value)
-								if (value === "") {
-									store.setComeback(0)
-								} else {
-									const character = characters.get(value)
-									if (character && store.comeback > character.comeback) {
-										store.setComeback(character.comeback)
-									}
-								}
-							}}
-							className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
-						>
-							<option value="">None</option>
-							{Array.from(characters.values()).map((character) => (
-								<option key={character.id} value={character.id}>
-									{character.name}
-								</option>
-							))}
-						</select>
-					</div>
+					<SelectField
+						label="Character"
+						value={store.selectedCharacterId ?? ""}
+						onChange={(event) => {
+							const value = event.target.value
+							store.setSelectedCharacterId(value === "" ? null : value)
+							if (value === "") {
+								store.setComeback(0)
+								return
+							}
+
+							const character = characters.get(value)
+							if (character && store.comeback > character.comeback) {
+								store.setComeback(character.comeback)
+							}
+						}}
+					>
+						<option value="">None</option>
+						{Array.from(characters.values()).map((character) => (
+							<option key={character.id} value={character.id}>
+								{character.name}
+							</option>
+						))}
+					</SelectField>
 
 					<div className="flex items-end gap-2">
 						{store.selectedCharacterId && (
 							<>
-								<div className="flex-1">
-									<label className="mb-1 block text-sm font-medium">
-										Fatigue
-									</label>
-									<input
-										type="number"
-										min="0"
-										value={store.fatigue}
-										onChange={(e) =>
-											store.setFatigue(
-												Math.max(0, parseInt(e.target.value) || 0),
-											)
-										}
-										className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
-									/>
-								</div>
-								<div className="flex-1">
-									<label className="mb-1 block text-sm font-medium">
-										{store.selectedCharacterId
+								<InputField
+									label="Fatigue"
+									className="flex-1"
+									type="number"
+									min="0"
+									value={store.fatigue}
+									onChange={(e) =>
+										store.setFatigue(Math.max(0, parseInt(e.target.value) || 0))
+									}
+								/>
+								<InputField
+									label={
+										store.selectedCharacterId
 											? `Comeback / ${
 													characters.get(store.selectedCharacterId)?.comeback ||
 													0
 												}`
-											: "Comeback"}
-									</label>
-									<input
-										type="number"
-										min="0"
-										value={store.comeback}
-										onChange={(e) => {
-											const selectedCharacter = store.selectedCharacterId
-												? characters.get(store.selectedCharacterId)
-												: null
-											const maxComeback = selectedCharacter?.comeback || 0
-											store.setComeback(
-												Math.min(
-													maxComeback,
-													Math.max(0, parseInt(e.target.value) || 0),
-												),
-											)
-										}}
-										className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
-									/>
-								</div>
+											: "Comeback"
+									}
+									className="flex-1"
+									type="number"
+									min="0"
+									value={store.comeback}
+									onChange={(e) => {
+										const selectedCharacter = store.selectedCharacterId
+											? characters.get(store.selectedCharacterId)
+											: null
+										const maxComeback = selectedCharacter?.comeback || 0
+										store.setComeback(
+											Math.min(
+												maxComeback,
+												Math.max(0, parseInt(e.target.value) || 0),
+											),
+										)
+									}}
+								/>
 							</>
 						)}
 
-						<div className="flex-1">
-							<label className="mb-1 block text-sm font-medium">
-								# of dice
-							</label>
-							<input
-								type="number"
-								min="1"
-								value={store.count}
-								onChange={(e) =>
-									store.setCount(Math.max(1, parseInt(e.target.value) || 1))
-								}
-								className="h-10 w-full min-w-0 rounded border border-gray-800 bg-gray-900 px-3 transition focus:border-gray-700 focus:outline-none"
-							/>
-						</div>
+						<InputField
+							label="# of dice"
+							className="flex-1"
+							type="number"
+							min="1"
+							value={store.count}
+							onChange={(e) =>
+								store.setCount(Math.max(1, parseInt(e.target.value) || 1))
+							}
+						/>
 					</div>
 
 					<div className="flex items-center gap-2">
@@ -338,7 +310,7 @@ export function DicePanel({
 						</ul>
 					)}
 				</section>
-			</Ariakit.Dialog>
-		</Ariakit.DialogProvider>
+			</DialogPanel>
+		</Dialog>
 	)
 }

@@ -1,5 +1,5 @@
-import { InputField } from "./InputField.tsx"
-import { Character, getComputedCharacter } from "./character.ts"
+import { Character, getComputedCharacter } from "../character.ts"
+import { InputField } from "./ui/InputField.tsx"
 
 interface CharacterResourceFieldsProps {
 	character: Character

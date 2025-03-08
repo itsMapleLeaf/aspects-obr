@@ -1,19 +1,19 @@
 import { intersection } from "es-toolkit"
-import { ActionsList } from "./ActionsList.tsx"
-import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
-import { InputField } from "./InputField.tsx"
-import { OptionCard } from "./OptionCard.tsx"
-import { StatField } from "./StatField.tsx"
-import { ToggleSection } from "./ToggleSection.tsx"
-import { Character, getComputedCharacter } from "./character.ts"
+import { Character, getComputedCharacter } from "../character.ts"
 import {
 	characterLevels,
 	drives,
 	experiences,
 	lineages,
 	roles,
-} from "./data.ts"
-import { usePartyPlayers, usePlayer } from "./hooks.tsx"
+} from "../data.ts"
+import { usePartyPlayers, usePlayer } from "../hooks/obr.ts"
+import { ActionsList } from "./ActionsList.tsx"
+import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
+import { StatField } from "./StatField.tsx"
+import { InputField } from "./ui/InputField.tsx"
+import { OptionCard } from "./ui/OptionCard.tsx"
+import { ToggleSection } from "./ui/ToggleSection.tsx"
 
 function getCharacterExperienceCount(character: Character) {
 	return intersection(Object.keys(experiences), character.experiences ?? [])

@@ -1,6 +1,6 @@
 import { Icon } from "~/components/ui/Icon.tsx"
 import { SquareIconButton } from "~/components/ui/SquareIconButton.tsx"
-import { Character } from "./character.ts"
+import { Character } from "../character.ts"
 
 interface CharacterListActionsProps {
 	character: Character

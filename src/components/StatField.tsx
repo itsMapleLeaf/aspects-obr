@@ -1,6 +1,6 @@
 import { useId, type ComponentProps } from "react"
 import { twMerge } from "tailwind-merge"
-import { SubmitInput } from "./SubmitInput.tsx"
+import { SubmitInput } from "./ui/SubmitInput.tsx"
 
 export function StatField({
 	label,

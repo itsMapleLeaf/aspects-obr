@@ -4,7 +4,7 @@ export function SubmitInput({
 	onSubmitValue,
 	...props
 }: ComponentProps<"input"> & {
-	onSubmitValue: (value: string) => unknown
+	onSubmitValue?: (value: string) => unknown
 }) {
 	const [tempValue, setTempValue] = useState<string>()
 	return (
@@ -17,7 +17,7 @@ export function SubmitInput({
 			onBlur={() => {
 				if (tempValue) {
 					startTransition(async () => {
-						await onSubmitValue(tempValue)
+						await onSubmitValue?.(tempValue)
 						setTempValue(undefined)
 					})
 				}
@@ -26,7 +26,7 @@ export function SubmitInput({
 				if (event.key === "Enter" && tempValue) {
 					event.preventDefault()
 					startTransition(async () => {
-						await onSubmitValue(tempValue)
+						await onSubmitValue?.(tempValue)
 						setTempValue(undefined)
 					})
 					event.currentTarget.blur()
