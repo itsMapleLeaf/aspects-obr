@@ -1,0 +1,19 @@
+@utility heading {
+	@apply text-3xl font-light;
+}
+
+@utility heading-xl {
+	@apply heading text-xl;
+}
+
+@utility heading-2xl {
+	@apply heading text-2xl;
+}
+
+@utility heading-3xl {
+	@apply heading text-3xl;
+}
+
+@utility heading-4xl {
+	@apply heading text-4xl;
+}

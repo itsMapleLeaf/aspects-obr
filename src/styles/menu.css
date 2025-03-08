@@ -1,0 +1,9 @@
+@utility menu-panel {
+	@apply panel flex translate-y-1 flex-col gap-1 overflow-y-auto p-1 opacity-0 transition data-enter:translate-y-0 data-enter:opacity-100;
+	min-width: max(var(--popover-anchor-width), 180px);
+	max-height: min(--spacing(80), calc(100vh - var(--spacing-4)));
+}
+
+@utility menu-item {
+	@apply hover:bg-primary-800/25 flex shrink-0 cursor-default items-center gap-2 rounded-sm px-3 py-2 transition;
+}

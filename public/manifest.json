@@ -1,0 +1,12 @@
+{
+	"name": "Aspects of Nature (beta)",
+	"version": "0.0.1",
+	"manifest_version": 1,
+	"action": {
+		"title": "Aspects of Nature (beta)",
+		"icon": "/favicon.svg",
+		"popover": "/index.html",
+		"height": 900,
+		"width": 600
+	}
+}

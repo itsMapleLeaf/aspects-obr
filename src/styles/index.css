@@ -1,0 +1,66 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+@plugin "tailwindcss-animate";
+
+/* @import "uploadthing/tw/v4";
+@source "../../node_modules/@uploadthing/react/dist"; */
+
+@import "./layout.css";
+@import "./typography.css";
+@import "./panel.css";
+@import "./button.css";
+@import "./menu.css";
+
+@theme {
+	--default-font-family: "Quicksand Variable";
+
+	--color-primary-50: var(--color-pink-50);
+	--color-primary-100: var(--color-pink-100);
+	--color-primary-200: var(--color-pink-200);
+	--color-primary-300: var(--color-pink-300);
+	--color-primary-400: var(--color-pink-400);
+	--color-primary-500: var(--color-pink-500);
+	--color-primary-600: var(--color-pink-600);
+	--color-primary-700: var(--color-pink-700);
+	--color-primary-800: var(--color-pink-800);
+	--color-primary-900: var(--color-pink-900);
+	--color-primary-950: var(--color-pink-950);
+
+	--color-gray-50: var(--color-zinc-50);
+	--color-gray-100: var(--color-zinc-100);
+	--color-gray-200: var(--color-zinc-200);
+	--color-gray-300: var(--color-zinc-300);
+	--color-gray-400: var(--color-zinc-400);
+	--color-gray-500: var(--color-zinc-500);
+	--color-gray-600: var(--color-zinc-600);
+	--color-gray-700: var(--color-zinc-700);
+	--color-gray-800: var(--color-zinc-800);
+	--color-gray-900: var(--color-zinc-900);
+	--color-gray-950: var(--color-zinc-950);
+
+	--color-primary-dark: color-mix(
+		in oklch,
+		black,
+		var(--color-primary-950) 50%
+	);
+
+	--spacing-page-body: 960px;
+}
+
+@layer base {
+	:root {
+		@apply selection:bg-primary-950 overflow-x-clip bg-gray-950;
+		scrollbar-color: var(--color-gray-700) var(--color-gray-950);
+		/* scrollbar-gutter: stable; */
+		color-scheme: dark;
+	}
+
+	.footnotes {
+		@apply border-t border-gray-700 text-sm text-gray-300;
+	}
+}
+
+@utility pointer-events-children {
+	@apply pointer-events-none *:pointer-events-auto;
+}

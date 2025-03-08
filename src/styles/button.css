@@ -1,0 +1,15 @@
+@utility button-base {
+	@apply flex items-center rounded-md border border-solid px-3 py-2 font-medium shadow-sm transition focus:ring-2 focus:outline-none;
+}
+
+@utility button-solid {
+	@apply button-base bg-primary-500/20 border-primary-500 hover:button-solid-active focus:ring-primary-500/50;
+}
+
+@utility button-solid-active {
+	@apply bg-primary-500/30;
+}
+
+@utility button-ghost {
+	@apply button-base border-transparent opacity-75 hover:bg-gray-500/30 hover:opacity-100 focus:ring-gray-500/50;
+}

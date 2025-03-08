@@ -1,0 +1,3 @@
+@utility page-container {
+	@apply max-w-page-body mx-auto w-full px-4;
+}
