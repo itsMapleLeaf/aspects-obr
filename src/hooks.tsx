@@ -1,4 +1,5 @@
 import OBR, { Player } from "@owlbear-rodeo/sdk"
+import { uniqBy } from "es-toolkit"
 import { useEffect, useState } from "react"
 
 export function usePlayer() {
@@ -25,11 +26,12 @@ export function usePartyPlayers() {
 	const [players, setPlayers] = useState<Player[]>([])
 
 	useEffect(() => {
-		OBR.party.getPlayers().then(setPlayers)
-	}, [])
-
-	useEffect(() => {
-		return OBR.party.onChange(setPlayers)
+		function handleChange(players: Player[]) {
+			// players might have multiple connections, making them show up several times
+			setPlayers(uniqBy(players, (p) => p.id))
+		}
+		OBR.party.getPlayers().then(handleChange)
+		return OBR.party.onChange(handleChange)
 	}, [])
 
 	return players
