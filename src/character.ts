@@ -30,6 +30,7 @@ export const Character = type({
 	"lightBonus": "number = 0",
 	"darknessBonus": "number = 0",
 	"ownerId?": "string",
+	"imageUrl": "(string | null)?",
 })
 
 export function createCharacter(name: string): Character {

@@ -6,7 +6,7 @@ export function SmallSolidButton(props: ComponentProps<typeof SolidButton>) {
 	return (
 		<SolidButton
 			{...props}
-			className={twMerge("h-7 px-2 pt-0.5 text-sm", props.className)}
+			className={twMerge("h-7 gap-1 px-2 text-sm", props.className)}
 		/>
 	)
 }

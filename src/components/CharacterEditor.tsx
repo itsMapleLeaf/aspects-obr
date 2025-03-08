@@ -1,3 +1,4 @@
+import OBR from "@owlbear-rodeo/sdk"
 import { startCase } from "es-toolkit"
 import { useState } from "react"
 import { withoutIndex } from "~/lib/utils.ts"
@@ -22,6 +23,7 @@ import { Icon } from "./ui/Icon.tsx"
 import { InputField } from "./ui/InputField.tsx"
 import { OptionCard } from "./ui/OptionCard.tsx"
 import { SelectField } from "./ui/SelectField.tsx"
+import { SmallSolidButton } from "./ui/SmallSolidButton.tsx"
 import { SolidButton } from "./ui/SolidButton.tsx"
 import { ToggleSection } from "./ui/ToggleSection.tsx"
 import { Tooltip } from "./ui/Tooltip.tsx"
@@ -45,6 +47,7 @@ export function CharacterEditor({
 	) => void
 }) {
 	const stats = getComputedCharacter(character)
+	const characterLineages = getCharacterLineages(character)
 
 	const level = characterLevels[character.level - 1]
 
@@ -65,41 +68,51 @@ export function CharacterEditor({
 
 	const availableAspectBonuses = 5 + (level?.aspectPoints ?? 0)
 
-	const characterLineages = getCharacterLineages(character)
-
 	return (
 		<main className="grid gap-6 p-3">
 			<div className="grid grid-cols-1 gap-3">
 				<div className="flex gap-3">
-					<InputField
-						label="Name"
-						className="flex-1"
-						value={character.name}
-						onSubmitValue={(value) => {
-							onUpdate({ name: value })
-						}}
+					<CharacterImage
+						url={character.imageUrl}
+						onChange={(imageUrl) => onUpdate({ imageUrl })}
 					/>
-					<InputField
-						label="Level"
-						type="number"
-						className="w-16"
-						min={1}
-						max={characterLevels.length}
-						value={character.level}
-						onSubmitValue={(event) =>
-							onUpdate({
-								level: Number(event) || 0,
-							})
-						}
-					/>
+
+					<div className="flex flex-1 flex-col gap-3">
+						<div className="flex gap-3">
+							<InputField
+								label="Name"
+								className="flex-1"
+								value={character.name}
+								onSubmitValue={(value) => {
+									onUpdate({ name: value })
+								}}
+							/>
+							<InputField
+								label="Level"
+								type="number"
+								className="w-16"
+								min={1}
+								max={characterLevels.length}
+								value={character.level}
+								onSubmitValue={(event) =>
+									onUpdate({
+										level: Number(event) || 0,
+									})
+								}
+							/>
+						</div>
+
+						<CharacterResourceFields
+							character={character}
+							onUpdate={onUpdate}
+						/>
+
+						<PlayerSelect
+							playerId={character.ownerId}
+							onChange={(ownerId) => onUpdate({ ownerId })}
+						/>
+					</div>
 				</div>
-
-				<CharacterResourceFields character={character} onUpdate={onUpdate} />
-
-				<PlayerSelect
-					playerId={character.ownerId}
-					onChange={(ownerId) => onUpdate({ ownerId })}
-				/>
 
 				<div className="grid grid-cols-2 gap-4">
 					<div className="grid content-start gap-3">
@@ -333,6 +346,7 @@ function PlayerSelect({
 	const players = usePartyPlayers()
 	const self = usePlayer()
 	const allPlayers = self ? [self, ...players] : players
+	if (self?.role !== "GM") return null
 
 	return (
 		<div>
@@ -445,5 +459,58 @@ function ExperienceForm({
 				</Tooltip>
 			</div>
 		</form>
+	)
+}
+
+function CharacterImage({
+	url,
+	onChange,
+}: {
+	url: string | undefined | null
+	onChange: (url: string | null) => void
+}) {
+	const player = usePlayer()
+	if (player?.role !== "GM") {
+		return url ? (
+			<img
+				src={url}
+				alt=""
+				className="aspect-[3/4] w-32 rounded border border-gray-800 object-cover object-top"
+			/>
+		) : null
+	}
+
+	return (
+		<div className="flex flex-col gap-1">
+			<Tooltip content="Set character image">
+				<button
+					type="button"
+					className="group flex aspect-[3/4] w-32 items-center justify-center overflow-clip rounded border border-gray-800 transition hover:border-gray-700"
+					onClick={async () => {
+						const [download] = await OBR.assets.downloadImages(false)
+						if (download?.image.url) {
+							onChange(download.image.url)
+						}
+					}}
+				>
+					<Icon
+						icon="mingcute:pic-line"
+						className="group-hover:text-primary-300 size-16 opacity-25 transition group-hover:opacity-50"
+					/>
+					{url && (
+						<img
+							src={url}
+							alt=""
+							className="size-full object-cover object-top"
+						/>
+					)}
+				</button>
+			</Tooltip>
+			{url && (
+				<SmallSolidButton onClick={() => onChange(null)}>
+					<Icon icon="mingcute:close-fill" className="size-4" /> Remove image
+				</SmallSolidButton>
+			)}
+		</div>
 	)
 }
