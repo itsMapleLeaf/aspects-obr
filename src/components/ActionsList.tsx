@@ -1,9 +1,10 @@
 import { groupBy } from "es-toolkit"
 import { twMerge } from "tailwind-merge"
-import { Button } from "~/components/ui/Button.tsx"
+import { Tooltip } from "~/components/ui/Tooltip"
 import type { Character } from "../character.ts"
 import { getComputedCharacter } from "../character.ts"
 import { actions, aspectSkills, aspects, attributes } from "../data.ts"
+import { SmallSolidButton } from "./ui/SmallSolidButton"
 
 interface ActionsListProps {
 	character: Character
@@ -72,16 +73,18 @@ export function ActionsList({
 							</h3>
 							<ul className="flex flex-wrap gap-2">
 								{actionsByAttribute[attribute.name]?.map((action) => (
-									<Button
+									<Tooltip
 										key={action.name}
-										size="sm"
-										title={`${action.description} (${attributeValue} dice)`}
-										onClick={() =>
-											handleActionClick(action.name, attribute.name)
-										}
+										content={`${action.description} (${attributeValue} dice)`}
 									>
-										{action.name}
-									</Button>
+										<SmallSolidButton
+											onClick={() =>
+												handleActionClick(action.name, attribute.name)
+											}
+										>
+											{action.name}
+										</SmallSolidButton>
+									</Tooltip>
 								))}
 							</ul>
 						</section>
@@ -111,17 +114,19 @@ export function ActionsList({
 										),
 									)
 									?.map((skill) => (
-										<Button
+										<Tooltip
 											key={skill.name}
-											size="sm"
-											title={`${skill.effect} (${aspectValue} dice)`}
-											onClick={() => {
-												if (disabled) return
-												handleAspectSkillClick(skill.name, aspect.name)
-											}}
+											content={`${skill.effect} (${aspectValue} dice)`}
 										>
-											{skill.name}
-										</Button>
+											<SmallSolidButton
+												onClick={() => {
+													if (disabled) return
+													handleAspectSkillClick(skill.name, aspect.name)
+												}}
+											>
+												{skill.name}
+											</SmallSolidButton>
+										</Tooltip>
 									))}
 							</ul>
 						</section>

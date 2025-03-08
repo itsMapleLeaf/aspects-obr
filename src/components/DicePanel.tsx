@@ -1,4 +1,3 @@
-import * as Ariakit from "@ariakit/react"
 import { type } from "arktype"
 import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
@@ -8,6 +7,7 @@ import type { DicePanelStore } from "./DicePanel.store.ts"
 import { Dialog, DialogButton, DialogPanel } from "./ui/Dialog.tsx"
 import { InputField } from "./ui/InputField.tsx"
 import { SelectField } from "./ui/SelectField.tsx"
+import { SolidButton } from "./ui/SolidButton"
 
 export type DiceRoll = typeof DiceRoll.inferOut
 export const DiceRoll = type({
@@ -218,25 +218,17 @@ export function DicePanel({
 					</div>
 
 					<div className="flex items-center gap-2">
-						<Ariakit.Button
-							type="submit"
-							className="hover:text-primary-300 flex h-10 flex-1 items-center justify-center gap-2 rounded border border-gray-800 bg-gray-900 px-3 transition"
-							autoFocus
-						>
+						<SolidButton type="submit" autoFocus>
 							<Icon icon="mingcute:box-3-fill" className="size-5" />
 							<span>Roll {store.count + store.comeback} dice</span>
-						</Ariakit.Button>
+						</SolidButton>
 						<Tooltip content="Roll and preserve settings">
-							<button
-								type="button"
-								className="hover:text-primary-300 flex aspect-square h-10 items-center justify-center gap-2 rounded opacity-75 transition hover:opacity-100"
-								onClick={rollDice}
-							>
+							<SolidButton onClick={rollDice}>
 								<Icon
 									icon="mingcute:history-anticlockwise-line"
 									className="size-5"
 								/>
-							</button>
+							</SolidButton>
 						</Tooltip>
 					</div>
 				</form>

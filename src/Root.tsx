@@ -1,7 +1,6 @@
 import OBR from "@owlbear-rodeo/sdk"
 import { ArkErrors, type } from "arktype"
 import { useEffect, useState, type ReactNode } from "react"
-import { twMerge } from "tailwind-merge"
 import { ContentState } from "~/components/ui/ContentState.tsx"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { Character, createCharacter } from "./character.ts"
@@ -15,6 +14,7 @@ import {
 	DiceRoll as DiceRollSchema,
 	type DiceRoll,
 } from "./components/DicePanel.tsx"
+import { SolidButton } from "./components/ui/SolidButton.tsx"
 import { ToggleSection } from "./components/ui/ToggleSection.tsx"
 import { owlbearExtensionNamespace } from "./extension.ts"
 import { usePlayer } from "./hooks/obr.ts"
@@ -242,10 +242,6 @@ function ExtensionClientView() {
 		})
 	}
 
-	const cardButtonStyle = twMerge(
-		"flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900 py-2 px-3 text-start hover:border-gray-700 hover:text-primary-200 transition",
-	)
-
 	return (
 		<>
 			{view.name === "characterList" && (
@@ -290,9 +286,7 @@ function ExtensionClientView() {
 
 					<footer className="sticky bottom-0 -m-3 bg-gray-950 p-3">
 						<div className="flex gap-2">
-							<button
-								type="button"
-								className={cardButtonStyle}
+							<SolidButton
 								onClick={async () => {
 									const character = await addNewCharacter()
 									setView({ name: "character", id: character.id })
@@ -300,10 +294,8 @@ function ExtensionClientView() {
 							>
 								<Icon icon="mingcute:user-add-2-fill" className="size-6" /> New
 								Character
-							</button>
-							<button
-								type="button"
-								className={cardButtonStyle}
+							</SolidButton>
+							<SolidButton
 								onClick={async () => {
 									const input = document.createElement("input")
 									input.type = "file"
@@ -346,7 +338,7 @@ function ExtensionClientView() {
 							>
 								<Icon icon="mingcute:upload-2-fill" className="size-6" /> Import
 								Character
-							</button>
+							</SolidButton>
 						</div>
 					</footer>
 				</main>
