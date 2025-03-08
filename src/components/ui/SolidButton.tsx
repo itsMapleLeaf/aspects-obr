@@ -8,7 +8,7 @@ export function SolidButton(props: ComponentProps<"button">) {
 			type="button"
 			{...props}
 			className={twMerge(
-				"hover:text-primary-200 flex items-center gap-2 rounded-lg border border-gray-800 bg-gray-900 px-3 py-2 text-start transition hover:border-gray-700",
+				"hover:text-primary-200 flex h-10 items-center gap-2 rounded border border-gray-800 bg-gray-900 px-3 text-start transition hover:border-gray-700",
 				props.className,
 			)}
 		/>

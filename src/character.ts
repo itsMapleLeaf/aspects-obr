@@ -1,10 +1,10 @@
 import { type } from "arktype"
-import { aspects, attributes, experiences, lineages, roles } from "./data.ts"
+import { lineages, roles } from "./data.ts"
 
-export type CustomExperience = typeof CustomExperience.inferOut
-export const CustomExperience = type({
+export type CharacterExperience = typeof CharacterExperience.inferOut
+export const CharacterExperience = type({
 	description: "string",
-	attributeIds: "string[]",
+	attributeId: "string",
 	aspectId: "string",
 })
 
@@ -19,8 +19,7 @@ export const Character = type({
 	"lineages?": "string[]",
 	"role?": "string | null",
 	"drive?": "string | null",
-	"experiences?": "string[]",
-	"customExperiences?": CustomExperience.array(),
+	"experiences?": CharacterExperience.array(),
 	"strengthBonus": "number = 0",
 	"senseBonus": "number = 0",
 	"dexterityBonus": "number = 0",
@@ -41,7 +40,6 @@ export function createCharacter(name: string): Character {
 		hits: 0,
 		fatigue: 0,
 		comeback: 0,
-		customExperiences: [],
 		strengthBonus: 0,
 		senseBonus: 0,
 		dexterityBonus: 0,
@@ -101,42 +99,13 @@ export function getComputedCharacter(character: Character): ComputedCharacter {
 	}
 
 	if (character.experiences) {
-		for (const expId of character.experiences) {
-			const exp = experiences[expId as keyof typeof experiences]
-			if (exp) {
-				const attrName = exp.attribute.name.toLowerCase()
-				stats[attrName as keyof typeof stats] += 2
-
-				if (exp.aspects.length === 1) {
-					const aspectName = exp.aspects[0]!.name.toLowerCase()
-					stats[aspectName as keyof typeof stats] += 2
-				} else if (exp.aspects.length === 2) {
-					for (const aspect of exp.aspects) {
-						const aspectName = aspect.name.toLowerCase()
-						stats[aspectName as keyof typeof stats] += 1
-					}
-				}
+		for (const experience of character.experiences) {
+			if (experience.attributeId) {
+				stats[experience.attributeId as keyof typeof stats] += 1
 			}
-		}
-	}
-
-	if (character.customExperiences) {
-		for (const experience of character.customExperiences) {
-			for (const attributeId of experience.attributeIds) {
-				const attribute = attributes[attributeId as keyof typeof attributes]
-				if (!attribute) continue
-
-				const attributeName = attribute.name.toLowerCase()
-				stats[attributeName as keyof typeof stats] += 1
+			if (experience.aspectId) {
+				stats[experience.aspectId as keyof typeof stats] += 1
 			}
-
-			if (!experience.aspectId) continue
-
-			const aspect = aspects[experience.aspectId as keyof typeof aspects]
-			if (!aspect) continue
-
-			const aspectName = aspect.name.toLowerCase()
-			stats[aspectName as keyof typeof stats] += 2
 		}
 	}
 

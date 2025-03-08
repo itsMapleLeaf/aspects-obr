@@ -1,9 +1,16 @@
-import { intersection } from "es-toolkit"
-import { Character, getComputedCharacter } from "../character.ts"
+import { startCase } from "es-toolkit"
+import { useState } from "react"
+import { withoutIndex } from "~/lib/utils.ts"
 import {
+	Character,
+	getComputedCharacter,
+	type CharacterExperience,
+} from "../character.ts"
+import {
+	aspects,
+	attributes,
 	characterLevels,
 	drives,
-	experiences,
 	lineages,
 	roles,
 } from "../data.ts"
@@ -11,14 +18,13 @@ import { usePartyPlayers, usePlayer } from "../hooks/obr.ts"
 import { ActionsList } from "./ActionsList.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
 import { StatField } from "./StatField.tsx"
+import { Icon } from "./ui/Icon.tsx"
 import { InputField } from "./ui/InputField.tsx"
 import { OptionCard } from "./ui/OptionCard.tsx"
+import { SelectField } from "./ui/SelectField.tsx"
+import { SolidButton } from "./ui/SolidButton.tsx"
 import { ToggleSection } from "./ui/ToggleSection.tsx"
-
-function getCharacterExperienceCount(character: Character) {
-	return intersection(Object.keys(experiences), character.experiences ?? [])
-		.length
-}
+import { Tooltip } from "./ui/Tooltip.tsx"
 
 function getCharacterLineages(character: Character) {
 	return lineages.filter((l) => character.lineages?.includes(l.name))
@@ -179,40 +185,25 @@ export function CharacterEditor({
 			</ToggleSection>
 
 			<ToggleSection
-				title={`Experiences (${getCharacterExperienceCount(character)}/3)`}
+				title={`Experiences (${(character.experiences ?? []).length}/3)`}
 			>
-				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Choose three experiences from your character's past. Each experience
-					adds +2 to the named attribute and increases your aspect attunement.
+				<p className="mb-4 text-sm font-medium text-pretty text-gray-300">
+					Define three experiences from your character's past. Each experience
+					gives you one attribute bonus and aspect bonus.
 				</p>
 
-				<div className="grid gap-3">
-					{Object.entries(experiences).map(([id, exp]) => (
-						<OptionCard
-							type="checkbox"
-							key={id}
-							label={exp.description}
-							description={[
-								`${exp.attribute.name} +2`,
-								exp.aspects.length === 1
-									? exp.aspects.map((it) => it.name).join("") + " +2"
-									: exp.aspects.map((it) => it.name + " +1").join(", "),
-							]}
-							checked={character.experiences?.includes(id) ?? false}
-							onChange={() => {
-								const currentExperiences = character.experiences || []
-								if (currentExperiences.includes(id)) {
-									onUpdate({
-										experiences: currentExperiences.filter((exp) => exp !== id),
-									})
-								} else {
-									onUpdate({
-										experiences: [...currentExperiences, id],
-									})
-								}
-							}}
-						/>
-					))}
+				<div className="grid gap-6">
+					<ExperienceForm
+						onSubmit={(experience) =>
+							onUpdate({
+								experiences: (character.experiences ?? []).concat(experience),
+							})
+						}
+					/>
+					<ExperienceList
+						experiences={character.experiences ?? []}
+						onChange={(experiences) => onUpdate({ experiences })}
+					/>
 				</div>
 			</ToggleSection>
 
@@ -361,5 +352,98 @@ function PlayerSelect({
 				))}
 			</select>
 		</div>
+	)
+}
+
+function ExperienceList({
+	experiences,
+	onChange,
+}: {
+	experiences: CharacterExperience[]
+	onChange: (experiences: CharacterExperience[]) => void
+}) {
+	return (
+		<ul className="flex flex-col gap-3">
+			{experiences.map((experience, index) => (
+				<li key={index} className="flex items-center gap-2">
+					<div className="flex-1">
+						<h3 className="heading-xl leading-6">{experience.description}</h3>
+						<p className="text-gray-400">
+							+1 {startCase(experience.attributeId)}, +1{" "}
+							{startCase(experience.aspectId)}
+						</p>
+					</div>
+					<Tooltip content="Remove this experience">
+						<SolidButton
+							className="border-transparent bg-transparent opacity-75 hover:opacity-100"
+							onClick={() => onChange(withoutIndex(experiences, index))}
+						>
+							<Icon icon="mingcute:close-fill" />
+						</SolidButton>
+					</Tooltip>
+				</li>
+			))}
+		</ul>
+	)
+}
+
+function ExperienceForm({
+	onSubmit,
+}: {
+	onSubmit: (experience: CharacterExperience) => void
+}) {
+	const [description, setDescription] = useState("")
+	const [attributeId, setAttributeId] = useState(Object.keys(attributes)[0]!)
+	const [aspectId, setAspectId] = useState(Object.keys(aspects)[0]!)
+	return (
+		<form
+			action={() => {
+				onSubmit({ description, aspectId, attributeId })
+				setDescription("")
+			}}
+		>
+			<div className="flex items-end gap-2">
+				<InputField
+					className="flex-1"
+					label="Description"
+					placeholder="got lost in the wilderness"
+					required
+					value={description}
+					onChange={(event) => setDescription(event.target.value)}
+				/>
+
+				<SelectField
+					className="w-32"
+					label="Attribute bonus"
+					value={attributeId}
+					onChange={(event) => setAttributeId(event.target.value)}
+				>
+					{Object.entries(attributes).map(([id, item]) => (
+						<option key={id} value={id}>
+							{item.name}
+						</option>
+					))}
+				</SelectField>
+
+				<SelectField
+					className="w-32"
+					label="Aspect bonus"
+					value={aspectId}
+					onChange={(event) => setAspectId(event.target.value)}
+				>
+					{Object.entries(aspects).map(([id, item]) => (
+						<option key={id} value={id}>
+							{item.name}
+						</option>
+					))}
+				</SelectField>
+
+				<Tooltip content="Add experience">
+					<SolidButton type="submit">
+						<Icon icon="mingcute:add-fill" />
+					</SolidButton>
+				</Tooltip>
+			</div>
+		</form>
 	)
 }

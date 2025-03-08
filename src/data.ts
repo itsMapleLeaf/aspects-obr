@@ -215,87 +215,82 @@ export const roles = {
 export const experiences = {
 	stoppedBreakIn: {
 		description: "stopped a break-in",
-		attribute: attributes.strength,
+		attributes: [attributes.strength],
 		aspects: [aspects.fire],
 	},
 	rebelliousUpbringing: {
 		description: "rebellious upbringing",
-		attribute: attributes.strength,
+		attributes: [attributes.strength],
 		aspects: [aspects.fire, aspects.darkness],
 	},
-	// experiencedDomesticAbuse: {
-	// 	description: "experienced domestic abuse",
-	// 	attribute: attributes.strength,
-	// 	aspects: [aspects.fire, aspects.darkness],
-	// },
 	gotLostInWilderness: {
 		description: "got lost in the wilderness",
-		attribute: attributes.sense,
+		attributes: [attributes.sense],
 		aspects: [aspects.darkness, aspects.wind],
 	},
 	foragedForSurvival: {
 		description: "foraged for survival",
-		attribute: attributes.sense,
+		attributes: [attributes.sense],
 		aspects: [aspects.wind, aspects.light],
 	},
 	readLotsOfBooks: {
 		description: "read a lot of books",
-		attribute: attributes.sense,
+		attributes: [attributes.sense],
 		aspects: [aspects.light, aspects.water],
 	},
 	studiedTopicOfInterest: {
 		description: "intensely studied a topic of interest",
-		attribute: attributes.sense,
+		attributes: [attributes.sense],
 		aspects: [aspects.light, aspects.water],
 	},
 	trainedInMarksmanship: {
 		description: "trained in archery/marksmanship",
-		attribute: attributes.dexterity,
+		attributes: [attributes.dexterity],
 		aspects: [aspects.fire, aspects.wind],
 	},
 	tookGymnastics: {
 		description: "took gymnastics",
-		attribute: attributes.dexterity,
+		attributes: [attributes.dexterity],
 		aspects: [aspects.wind, aspects.water],
 	},
 	martialArtsExperience: {
 		description: "martial arts experience",
-		attribute: attributes.dexterity,
+		attributes: [attributes.dexterity],
 		aspects: [aspects.water, aspects.fire],
 	},
 	acquaintanceWithCrafter: {
 		description: "close acquaintance with a crafter",
-		attribute: attributes.dexterity,
+		attributes: [attributes.dexterity],
 		aspects: [aspects.light, aspects.water],
 	},
 	providedForFamily: {
 		description: "worked to provide for your family",
-		attribute: attributes.presence,
+		attributes: [attributes.presence],
 		aspects: [aspects.light],
 	},
 	classClown: {
 		description: "class clown",
-		attribute: attributes.presence,
+		attributes: [attributes.presence],
 		aspects: [aspects.wind],
 	},
 	metFriendlyOutlander: {
 		description: "met a friendly outlander",
-		attribute: attributes.presence,
+		attributes: [attributes.presence],
 		aspects: [aspects.water, aspects.wind],
 	},
 	livedInStrictHousehold: {
 		description: "lived in a strict household",
-		attribute: attributes.presence,
+		attributes: [attributes.presence],
 		aspects: [aspects.light, aspects.darkness],
 	},
 	experiencedHomelessness: {
 		description: "experienced homelessness",
-		attribute: attributes.presence,
+		attributes: [attributes.presence],
 		aspects: [aspects.darkness],
 	},
 	hadSeveralPartners: {
 		description: "had several partners",
-		attribute: attributes.presence,
+		attributes: [attributes.presence],
 		aspects: [aspects.wind, aspects.darkness],
 	},
 }
