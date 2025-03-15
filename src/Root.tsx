@@ -242,6 +242,7 @@ function ExtensionClientView() {
 									(character.ownerId != null &&
 										character.ownerId === player?.id),
 							)
+							.sort((a, b) => a.name.localeCompare(b.name))
 							.map((character) => (
 								<li key={character.id}>
 									<ToggleSection
