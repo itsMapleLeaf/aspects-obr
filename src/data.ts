@@ -431,19 +431,3 @@ export const personas = [
 			"Blessed Healer - When you heal 1 hit on another character, also heal 1 hit on yourself.",
 	},
 ]
-
-export const characterLevels = [
-	{ level: 1, attributePoints: 0 },
-	{ level: 2, attributePoints: 0 },
-	{ level: 3, attributePoints: 1 },
-	{ level: 4, attributePoints: 1 },
-	{ level: 5, attributePoints: 2 },
-	{ level: 6, attributePoints: 2 },
-	{ level: 7, attributePoints: 3 },
-	{ level: 8, attributePoints: 3 },
-	{ level: 9, attributePoints: 4 },
-	{ level: 10, attributePoints: 4 },
-	{ level: 11, attributePoints: 5 },
-	{ level: 12, attributePoints: 5 },
-	{ level: 13, attributePoints: 6 },
-]

@@ -4,7 +4,6 @@ export type Character = typeof Character.inferOut
 export const Character = type({
 	"id": "string = ''",
 	"name": "string = ''",
-	"level": "number = 1",
 	"hits": "number = 0",
 	"fatigue": "number = 0",
 	"lineages?": "string[]",
@@ -20,7 +19,6 @@ export function createCharacter(name: string): Character {
 	return {
 		id: crypto.randomUUID(),
 		name,
-		level: 1,
 		hits: 0,
 		fatigue: 0,
 	}

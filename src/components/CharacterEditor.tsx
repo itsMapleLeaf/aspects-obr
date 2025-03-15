@@ -2,13 +2,7 @@ import OBR from "@owlbear-rodeo/sdk"
 import { isEqual } from "es-toolkit"
 import { subtract } from "es-toolkit/compat"
 import { Character } from "../character.ts"
-import {
-	aspects,
-	attributes,
-	characterLevels,
-	lineages,
-	personas,
-} from "../data.ts"
+import { aspects, attributes, lineages, personas } from "../data.ts"
 import { usePartyPlayers, usePlayer } from "../hooks/obr.ts"
 import { toggleInArray } from "../lib/utils.ts"
 import { ActionsList } from "./ActionsList.tsx"
@@ -113,19 +107,6 @@ export function CharacterEditor({
 								onSubmitValue={(value) => {
 									onUpdate({ name: value })
 								}}
-							/>
-							<InputField
-								label="Level"
-								type="number"
-								className="w-16"
-								min={1}
-								max={characterLevels.length}
-								value={character.level}
-								onSubmitValue={(event) =>
-									onUpdate({
-										level: Number(event) || 0,
-									})
-								}
 							/>
 						</div>
 
