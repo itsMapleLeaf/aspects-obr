@@ -5,7 +5,6 @@ export function useDicePanelStore() {
 	const [count, setCount] = useState(1)
 	const [label, setLabel] = useState("")
 	const [fatigue, setFatigue] = useState(0)
-	const [comeback, setComeback] = useState(0)
 	const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(
 		null,
 	)
@@ -14,7 +13,6 @@ export function useDicePanelStore() {
 		setCount(1)
 		setLabel("")
 		setFatigue(0)
-		setComeback(0)
 	}
 
 	return {
@@ -24,8 +22,6 @@ export function useDicePanelStore() {
 		setLabel,
 		fatigue,
 		setFatigue,
-		comeback,
-		setComeback,
 		selectedCharacterId,
 		setSelectedCharacterId,
 		reset,

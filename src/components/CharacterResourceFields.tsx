@@ -39,18 +39,6 @@ export function CharacterResourceFields({
 					})
 				}
 			/>
-			<InputField
-				label="Comeback"
-				type="number"
-				className="min-w-0 flex-1"
-				min={0}
-				value={character.comeback}
-				onSubmitValue={(event) =>
-					onUpdate({
-						comeback: Number(event) || 0,
-					})
-				}
-			/>
 		</div>
 	)
 }

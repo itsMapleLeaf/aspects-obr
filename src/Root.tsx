@@ -176,14 +176,12 @@ function ExtensionClientView() {
 		fatigue,
 		results,
 		isSuccess,
-		comebackSpent,
 		label,
 	}: {
 		characterId: string
 		fatigue: number
 		results: number[]
 		isSuccess: boolean
-		comebackSpent: number
 		label: string
 	}): Promise<void> {
 		let character = characterId ? characters.get(characterId) : null
@@ -193,12 +191,6 @@ function ExtensionClientView() {
 
 			if (fatigue > 0) {
 				updates.fatigue = character.fatigue + fatigue
-			}
-
-			if (comebackSpent > 0) {
-				updates.comeback = Math.max(0, character.comeback - comebackSpent)
-			} else if (!isSuccess) {
-				updates.comeback = character.comeback + 1
 			}
 
 			character = { ...character, ...updates }
@@ -216,7 +208,6 @@ function ExtensionClientView() {
 					diceCount: results.length,
 					results,
 					characterName: character?.name,
-					comebackUsed: comebackSpent > 0 ? comebackSpent : undefined,
 				},
 				...diceRolls,
 			],

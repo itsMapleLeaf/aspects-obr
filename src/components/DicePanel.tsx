@@ -18,7 +18,6 @@ export const DiceRoll = type({
 	timestamp: "number",
 	fatigueCost: "number?",
 	characterName: "string?",
-	comebackUsed: "(number | undefined)?",
 })
 
 function calculateSuccesses(value: number): number {
@@ -64,7 +63,6 @@ interface DicePanelProps {
 		fatigue: number
 		results: number[]
 		isSuccess: boolean
-		comebackSpent: number
 		label: string
 	}) => void
 	characters: Map<string, Character>
@@ -81,10 +79,8 @@ export function DicePanel({
 	function rollDice() {
 		if (store.count < 1) return
 
-		const totalDiceCount = store.count + store.comeback
-
 		const results = Array.from(
-			{ length: totalDiceCount },
+			{ length: store.count },
 			() => Math.floor(Math.random() * 12) + 1,
 		)
 
@@ -97,7 +93,6 @@ export function DicePanel({
 				fatigue: store.fatigue,
 				results,
 				isSuccess,
-				comebackSpent: store.comeback,
 				label: store.label,
 			})
 		}
@@ -144,15 +139,6 @@ export function DicePanel({
 						onChange={(event) => {
 							const value = event.target.value
 							store.setSelectedCharacterId(value === "" ? null : value)
-							if (value === "") {
-								store.setComeback(0)
-								return
-							}
-
-							const character = characters.get(value)
-							if (character && store.comeback > character.comeback) {
-								store.setComeback(character.comeback)
-							}
 						}}
 					>
 						<option value="">None</option>
@@ -165,44 +151,16 @@ export function DicePanel({
 
 					<div className="flex items-end gap-2">
 						{store.selectedCharacterId && (
-							<>
-								<InputField
-									label="Fatigue"
-									className="flex-1"
-									type="number"
-									min="0"
-									value={store.fatigue}
-									onChange={(e) =>
-										store.setFatigue(Math.max(0, parseInt(e.target.value) || 0))
-									}
-								/>
-								<InputField
-									label={
-										store.selectedCharacterId
-											? `Comeback / ${
-													characters.get(store.selectedCharacterId)?.comeback ||
-													0
-												}`
-											: "Comeback"
-									}
-									className="flex-1"
-									type="number"
-									min="0"
-									value={store.comeback}
-									onChange={(e) => {
-										const selectedCharacter = store.selectedCharacterId
-											? characters.get(store.selectedCharacterId)
-											: null
-										const maxComeback = selectedCharacter?.comeback || 0
-										store.setComeback(
-											Math.min(
-												maxComeback,
-												Math.max(0, parseInt(e.target.value) || 0),
-											),
-										)
-									}}
-								/>
-							</>
+							<InputField
+								label="Fatigue"
+								className="flex-1"
+								type="number"
+								min="0"
+								value={store.fatigue}
+								onChange={(e) =>
+									store.setFatigue(Math.max(0, parseInt(e.target.value) || 0))
+								}
+							/>
 						)}
 
 						<InputField
@@ -224,7 +182,7 @@ export function DicePanel({
 							className="flex-1 justify-center"
 						>
 							<Icon icon="mingcute:box-3-fill" className="size-5" />
-							<span>Roll {store.count + store.comeback} dice</span>
+							<span>Roll {store.count} dice</span>
 						</SolidButton>
 						<Tooltip content="Roll and preserve settings">
 							<SolidButton onClick={rollDice}>
@@ -285,11 +243,6 @@ export function DicePanel({
 													</strong>{" "}
 													•{" "}
 												</>
-											) : null}
-											{roll.comebackUsed ? (
-												<span className="text-blue-400">
-													Used {roll.comebackUsed} comeback •{" "}
-												</span>
 											) : null}
 											{isSuccess ? (
 												<strong className="text-green-300">
