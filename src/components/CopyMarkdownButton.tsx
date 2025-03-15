@@ -31,9 +31,9 @@ function formatCharacterAsMarkdown(character: Character): string {
 		.map((skillName) => {
 			const skill = aspectSkills.find((s) => s.name === skillName)
 			if (!skill) return skillName
-			return `- **${skill.name}**: ${skill.description}\n  ${skill.effect ? `Effect: ${skill.effect}` : ""}`
+			return `${skill.name}: ${skill.effect}`
 		})
-		.join("\n")
+		.join("\n\n")
 
 	return `# ${character.name || "Unnamed Character"}
 
