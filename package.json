@@ -8,12 +8,14 @@
 		"build": "vite build",
 		"lint": "eslint .",
 		"preview": "vite preview",
-		"test": "vitest --run"
+		"test": "vitest --run",
+		"fetch-notion-data": "bun run scripts/fetch-notion-data.ts"
 	},
 	"dependencies": {
 		"@ariakit/react": "^0.4.15",
 		"@fontsource-variable/quicksand": "^5.2.5",
 		"@iconify/react": "^5.2.0",
+		"@notionhq/client": "^2.3.0",
 		"@owlbear-rodeo/sdk": "^3.1.0",
 		"@tailwindcss/typography": "^0.5.16",
 		"arktype": "^2.1.8",
