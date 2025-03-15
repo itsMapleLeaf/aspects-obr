@@ -1,13 +1,14 @@
 import OBR from "@owlbear-rodeo/sdk"
-import { isEqual } from "es-toolkit"
-import { subtract } from "es-toolkit/compat"
 import { Character } from "../character.ts"
 import {
-	ASPECT_ATTRIBUTE_DISTRIBUTION,
+	ASPECT_ACTIONS_COUNT,
+	ASPECT_ATTRIBUTE_MIN,
+	ASPECT_ATTRIBUTE_POINTS,
 	aspects,
 	aspectSkills,
 	attributes,
-	CORE_ATTRIBUTE_DISTRIBUTION,
+	CORE_ATTRIBUTE_MIN,
+	CORE_ATTRIBUTE_POINTS,
 	lineages,
 	personas,
 } from "../data.ts"
@@ -31,17 +32,6 @@ function getCharacterPersonas(character: Character) {
 	return personas.filter((p) => character.personas?.includes(p.name))
 }
 
-// Validation functions for attribute distributions
-function isValidAttributeDistribution(
-	values: number[],
-	requiredDistribution: readonly number[],
-) {
-	return isEqual(
-		values.sort(subtract),
-		[...requiredDistribution].sort(subtract),
-	)
-}
-
 export function CharacterEditor({
 	character,
 	onUpdate,
@@ -60,46 +50,35 @@ export function CharacterEditor({
 	const characterPersonas = getCharacterPersonas(character)
 	const attributeScores = character.attributeScores || {}
 
-	// Unique options for dropdowns
-	const coreAttributeOptions = Array.from(
-		new Set(CORE_ATTRIBUTE_DISTRIBUTION),
-	).sort(subtract)
-	const aspectAttributeOptions = Array.from(
-		new Set(ASPECT_ATTRIBUTE_DISTRIBUTION),
-	).sort(subtract)
-
-	const coreAttributeValues = Object.keys(attributes).map((key) => {
-		const value = attributeScores[key]
-		return value != null && CORE_ATTRIBUTE_DISTRIBUTION.includes(value)
-			? value
-			: CORE_ATTRIBUTE_DISTRIBUTION[0]
-	})
-
-	const aspectAttributeValues = Object.keys(aspects).map((key) => {
-		const value = attributeScores[key]
-		return value != null && ASPECT_ATTRIBUTE_DISTRIBUTION.includes(value)
-			? value
-			: ASPECT_ATTRIBUTE_DISTRIBUTION[0]
-	})
-
-	// Validate distributions
-	const isCoreAttributesValid = isValidAttributeDistribution(
-		coreAttributeValues,
-		CORE_ATTRIBUTE_DISTRIBUTION,
+	// Calculate totals for each attribute category
+	const coreAttributeValues = Object.keys(attributes).map(
+		(key) => attributeScores[key] ?? CORE_ATTRIBUTE_MIN,
 	)
-	const isAspectAttributesValid = isValidAttributeDistribution(
-		aspectAttributeValues,
-		ASPECT_ATTRIBUTE_DISTRIBUTION,
+	const aspectAttributeValues = Object.keys(aspects).map(
+		(key) => attributeScores[key] ?? ASPECT_ATTRIBUTE_MIN,
 	)
+
+	const coreAttributesTotal = coreAttributeValues.reduce(
+		(sum, val) => sum + val,
+		0,
+	)
+	const aspectAttributesTotal = aspectAttributeValues.reduce(
+		(sum, val) => sum + val,
+		0,
+	)
+
+	// Validate totals
+	const isCoreAttributesValid = coreAttributesTotal === CORE_ATTRIBUTE_POINTS
+	const isAspectAttributesValid =
+		aspectAttributesTotal === ASPECT_ATTRIBUTE_POINTS
 
 	const updateAttributeScore = (attribute: string, value: number) => {
-		const updatedScores = { ...attributeScores }
-		if (value !== 0) {
-			updatedScores[attribute] = value
-		} else {
-			delete updatedScores[attribute]
-		}
-		onUpdate({ attributeScores: updatedScores })
+		onUpdate({
+			attributeScores: {
+				...attributeScores,
+				[attribute]: value,
+			},
+		})
 	}
 
 	return (
@@ -140,21 +119,24 @@ export function CharacterEditor({
 						<h2
 							className={`heading-xl text-left ${isCoreAttributesValid ? "" : "text-red-300"}`}
 						>
-							Core Attributes
+							Core Attributes ({coreAttributesTotal}/{CORE_ATTRIBUTE_POINTS})
 						</h2>
 						{Object.entries(attributes).map(([key, attribute]) => (
-							<AttributeDropdown
+							<AttributeInput
 								key={key}
 								label={attribute.name}
-								value={attributeScores[key] ?? 1}
-								onSubmitValue={(value) => updateAttributeScore(key, value)}
-								options={coreAttributeOptions}
+								value={attributeScores[key] ?? CORE_ATTRIBUTE_MIN}
+								onSubmitValue={(value) => {
+									const clampedValue = Math.max(value, CORE_ATTRIBUTE_MIN)
+									updateAttributeScore(key, clampedValue)
+								}}
+								min={CORE_ATTRIBUTE_MIN}
 							/>
 						))}
 						{!isCoreAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
-								Assign exactly one of each:{" "}
-								{CORE_ATTRIBUTE_DISTRIBUTION.join(", ")} to core attributes
+								Assign exactly {CORE_ATTRIBUTE_POINTS} total points to core
+								attributes (minimum {CORE_ATTRIBUTE_MIN} each)
 							</p>
 						)}
 					</div>
@@ -163,21 +145,25 @@ export function CharacterEditor({
 						<h2
 							className={`heading-xl text-left ${isAspectAttributesValid ? "" : "text-red-300"}`}
 						>
-							Aspect Attributes
+							Aspect Attributes ({aspectAttributesTotal}/
+							{ASPECT_ATTRIBUTE_POINTS})
 						</h2>
 						{Object.entries(aspects).map(([key, aspect]) => (
-							<AttributeDropdown
+							<AttributeInput
 								key={key}
 								label={aspect.name}
-								value={attributeScores[key] ?? 0}
-								onSubmitValue={(value) => updateAttributeScore(key, value)}
-								options={aspectAttributeOptions}
+								value={attributeScores[key] ?? ASPECT_ATTRIBUTE_MIN}
+								onSubmitValue={(value) => {
+									const clampedValue = Math.max(value, ASPECT_ATTRIBUTE_MIN)
+									updateAttributeScore(key, clampedValue)
+								}}
+								min={ASPECT_ATTRIBUTE_MIN}
 							/>
 						))}
 						{!isAspectAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
-								Assign exactly: {ASPECT_ATTRIBUTE_DISTRIBUTION.join(", ")} to
-								aspect attributes
+								Assign exactly {ASPECT_ATTRIBUTE_POINTS} total points to aspect
+								attributes (minimum {ASPECT_ATTRIBUTE_MIN} each)
 							</p>
 						)}
 					</div>
@@ -224,7 +210,10 @@ export function CharacterEditor({
 							checked={character.lineages?.includes(lineage.name)}
 							onChange={() => {
 								onUpdate({
-									lineages: toggleInArray(character.lineages, lineage.name),
+									lineages: toggleInArray(
+										character.lineages ?? [],
+										lineage.name,
+									),
 								})
 							}}
 						/>
@@ -255,7 +244,10 @@ export function CharacterEditor({
 							checked={character.personas?.includes(persona.name)}
 							onChange={() => {
 								onUpdate({
-									personas: toggleInArray(character.personas, persona.name),
+									personas: toggleInArray(
+										character.personas ?? [],
+										persona.name,
+									),
 								})
 							}}
 						/>
@@ -263,15 +255,17 @@ export function CharacterEditor({
 				</div>
 			</ToggleSection>
 
-			<ToggleSection title="Aspect Actions">
+			<ToggleSection
+				title={`Aspect Actions (${character.selectedAspectSkills?.length || 0}/${ASPECT_ACTIONS_COUNT})`}
+			>
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
 					Aspect actions are the various ways your character can perform aspect
 					art.
 				</p>
 
-				{character.selectedAspectSkills?.length !== 3 && (
+				{character.selectedAspectSkills?.length !== ASPECT_ACTIONS_COUNT && (
 					<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-						Select 3 aspect actions.
+						Select {ASPECT_ACTIONS_COUNT} aspect actions.
 					</p>
 				)}
 
@@ -317,7 +311,7 @@ export function CharacterEditor({
 												onChange={() => {
 													onUpdate({
 														selectedAspectSkills: toggleInArray(
-															character.selectedAspectSkills,
+															character.selectedAspectSkills ?? [],
 															action.name,
 														),
 													})
@@ -351,33 +345,29 @@ export function CharacterEditor({
 	)
 }
 
-function AttributeDropdown({
+function AttributeInput({
 	label,
 	className,
 	value,
 	onSubmitValue,
-	options,
+	min,
 }: {
 	label: string
 	className?: string
 	value: number
 	onSubmitValue: (value: number) => void
-	options: number[]
+	min: number
 }) {
 	return (
 		<div className={`flex items-center gap-3 ${className}`}>
 			<label className="w-20 font-medium">{label}</label>
-			<select
+			<input
+				type="number"
 				value={value}
+				min={min}
 				onChange={(event) => onSubmitValue(Number(event.target.value))}
 				className="h-10 w-20 min-w-0 rounded border border-gray-800 bg-gray-900 px-3 text-center transition focus:border-gray-700 focus:outline-none"
-			>
-				{options.map((option) => (
-					<option key={option} value={option}>
-						{option}
-					</option>
-				))}
-			</select>
+			/>
 		</div>
 	)
 }

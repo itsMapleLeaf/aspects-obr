@@ -1,6 +1,8 @@
-// Character creation constants
-export const CORE_ATTRIBUTE_DISTRIBUTION = [1, 2, 2, 3, 5] as const
-export const ASPECT_ATTRIBUTE_DISTRIBUTION = [0, 0, 2, 3, 5] as const
+export const CORE_ATTRIBUTE_POINTS = 12
+export const ASPECT_ATTRIBUTE_POINTS = 8
+export const CORE_ATTRIBUTE_MIN = 1
+export const ASPECT_ATTRIBUTE_MIN = 0
+export const ASPECT_ACTIONS_COUNT = 5
 
 export const attributes = {
 	strength: {
