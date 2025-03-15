@@ -77,7 +77,7 @@ export function ActionsList({
 	}
 
 	return (
-		<div className={twMerge("flex flex-col gap-4", className)}>
+		<div className={twMerge("flex flex-col flex-wrap gap-4", className)}>
 			{/* Core attribute actions */}
 			<div className="flex gap-x-6 gap-y-2">
 				{Object.values(attributes).map((attribute) => {
@@ -89,7 +89,7 @@ export function ActionsList({
 							<h3 className="mb-0.5 text-sm font-semibold">
 								{attribute.name} ({attributeValue})
 							</h3>
-							<ul className="flex flex-wrap gap-2">
+							<ul className="flex flex-col gap-2">
 								{actionsByAttribute[attribute.name]?.map((action) => (
 									<Tooltip
 										key={action.name}
@@ -143,7 +143,7 @@ export function ActionsList({
 							<h3 className="mb-0.5 text-sm font-semibold">
 								{aspect.name} ({aspectValue})
 							</h3>
-							<ul className="flex flex-wrap gap-2">
+							<ul className="flex flex-col flex-wrap gap-2">
 								{aspectActions.map((action) => {
 									const isSelected =
 										character.selectedAspectSkills?.includes(action.name) ??
