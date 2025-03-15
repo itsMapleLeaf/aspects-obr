@@ -3,6 +3,7 @@ import { twMerge } from "tailwind-merge"
 import { Icon } from "~/components/ui/Icon.tsx"
 import { Tooltip } from "~/components/ui/Tooltip.tsx"
 import { Character } from "../character.ts"
+import { calculateSuccesses, countTotalSuccesses } from "../lib/dice.ts"
 import type { DicePanelStore } from "./DicePanel.store.ts"
 import { Dialog, DialogButton, DialogPanel } from "./ui/Dialog.tsx"
 import { InputField } from "./ui/InputField.tsx"
@@ -19,12 +20,6 @@ export const DiceRoll = type({
 	fatigueCost: "number?",
 	characterName: "string?",
 })
-
-function calculateSuccesses(value: number): number {
-	if (value >= 10 && value <= 11) return 1
-	if (value === 12) return 2
-	return 0
-}
 
 function getDieIcon(value: number): React.ReactNode {
 	const success = calculateSuccesses(value)
@@ -84,7 +79,7 @@ export function DicePanel({
 			() => Math.floor(Math.random() * 12) + 1,
 		)
 
-		const successes = countSuccesses(results)
+		const successes = countTotalSuccesses(results)
 		const isSuccess = successes > 0
 
 		if (store.selectedCharacterId !== null) {
@@ -96,10 +91,6 @@ export function DicePanel({
 				label: store.label,
 			})
 		}
-	}
-
-	function countSuccesses(results: number[]): number {
-		return results.reduce((sum, value) => sum + calculateSuccesses(value), 0)
 	}
 
 	return (
@@ -207,7 +198,7 @@ export function DicePanel({
 					) : (
 						<ul className="grid min-h-0 flex-1 gap-2 overflow-y-auto">
 							{diceRolls.map((roll) => {
-								const successes = countSuccesses(roll.results)
+								const successes = countTotalSuccesses(roll.results)
 								const isSuccess = successes > 0
 								return (
 									<li

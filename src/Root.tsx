@@ -18,6 +18,7 @@ import { SolidButton } from "./components/ui/SolidButton.tsx"
 import { ToggleSection } from "./components/ui/ToggleSection.tsx"
 import { owlbearExtensionNamespace } from "./extension.ts"
 import { usePlayer } from "./hooks/obr.ts"
+import { countTotalSuccesses } from "./lib/dice.ts"
 import { broadcastNotification } from "./notifications.ts"
 
 const metadataCharactersKey = `${owlbearExtensionNamespace}/characters`
@@ -213,11 +214,7 @@ function ExtensionClientView() {
 			],
 		})
 
-		const successes = results.reduce((sum, value) => {
-			if (value >= 10 && value <= 11) return sum + 1
-			if (value === 12) return sum + 2
-			return sum
-		}, 0)
+		const successes = countTotalSuccesses(results)
 
 		const successText = isSuccess
 			? `${successes} ${successes === 1 ? "success" : "successes"}`
