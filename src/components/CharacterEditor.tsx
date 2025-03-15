@@ -8,7 +8,6 @@ import {
 	type CharacterExperience,
 } from "../character.ts"
 import {
-	aspects,
 	attributes,
 	characterLevels,
 	drives,
@@ -60,15 +59,6 @@ export function CharacterEditor({
 
 	const availableAttributeBonuses = 3 + (level?.attributePoints ?? 0)
 
-	const currentAspectBonuses =
-		character.fireBonus +
-		character.waterBonus +
-		character.windBonus +
-		character.lightBonus +
-		character.darknessBonus
-
-	const availableAspectBonuses = 5 + (level?.aspectPoints ?? 0)
-
 	return (
 		<main className="grid gap-6 p-3">
 			<div className="grid grid-cols-1 gap-3">
@@ -115,82 +105,38 @@ export function CharacterEditor({
 					</div>
 				</div>
 
-				<div className="grid grid-cols-2 gap-4">
-					<div className="grid content-start gap-3">
-						<h2 className="heading-xl text-center">
-							Attributes ({currentAttributeBonuses}/{availableAttributeBonuses})
-						</h2>
-
-						<StatField
-							label="Strength"
-							className="min-w-0 flex-1"
-							value={character.strengthBonus || 0}
-							addition={stats.strength - character.strengthBonus}
-							onSubmitValue={(value) => onUpdate({ strengthBonus: value })}
-						/>
-						<StatField
-							label="Sense"
-							className="min-w-0 flex-1"
-							value={character.senseBonus || 0}
-							addition={stats.sense - character.senseBonus}
-							onSubmitValue={(value) => onUpdate({ senseBonus: value })}
-						/>
-						<StatField
-							label="Dexterity"
-							className="min-w-0 flex-1"
-							value={character.dexterityBonus || 0}
-							addition={stats.dexterity - character.dexterityBonus}
-							onSubmitValue={(value) => onUpdate({ dexterityBonus: value })}
-						/>
-						<StatField
-							label="Presence"
-							className="min-w-0 flex-1"
-							value={character.presenceBonus || 0}
-							addition={stats.presence - character.presenceBonus}
-							onSubmitValue={(value) => onUpdate({ presenceBonus: value })}
-						/>
-					</div>
-
-					<div className="grid content-start gap-3">
-						<h2 className="heading-xl text-center">
-							Aspects ({currentAspectBonuses}/{availableAspectBonuses})
-						</h2>
-						<StatField
-							label="Fire"
-							className="min-w-0 flex-1"
-							value={character.fireBonus || 0}
-							addition={stats.fire - character.fireBonus}
-							onSubmitValue={(value) => onUpdate({ fireBonus: value })}
-						/>
-						<StatField
-							label="Water"
-							className="min-w-0 flex-1"
-							value={character.waterBonus || 0}
-							addition={stats.water - character.waterBonus}
-							onSubmitValue={(value) => onUpdate({ waterBonus: value })}
-						/>
-						<StatField
-							label="Wind"
-							className="min-w-0 flex-1"
-							value={character.windBonus || 0}
-							addition={stats.wind - character.windBonus}
-							onSubmitValue={(value) => onUpdate({ windBonus: value })}
-						/>
-						<StatField
-							label="Light"
-							className="min-w-0 flex-1"
-							value={character.lightBonus || 0}
-							addition={stats.light - character.lightBonus}
-							onSubmitValue={(value) => onUpdate({ lightBonus: value })}
-						/>
-						<StatField
-							label="Darkness"
-							className="min-w-0 flex-1"
-							value={character.darknessBonus || 0}
-							addition={stats.darkness - character.darknessBonus}
-							onSubmitValue={(value) => onUpdate({ darknessBonus: value })}
-						/>
-					</div>
+				<div className="grid content-start gap-3">
+					<h2 className="heading-xl text-center">
+						Attributes ({currentAttributeBonuses}/{availableAttributeBonuses})
+					</h2>
+					<StatField
+						label="Strength"
+						className="min-w-0 flex-1"
+						value={character.strengthBonus}
+						addition={stats.strength - character.strengthBonus}
+						onSubmitValue={(value) => onUpdate({ strengthBonus: value })}
+					/>
+					<StatField
+						label="Sense"
+						className="min-w-0 flex-1"
+						value={character.senseBonus}
+						addition={stats.sense - character.senseBonus}
+						onSubmitValue={(value) => onUpdate({ senseBonus: value })}
+					/>
+					<StatField
+						label="Dexterity"
+						className="min-w-0 flex-1"
+						value={character.dexterityBonus}
+						addition={stats.dexterity - character.dexterityBonus}
+						onSubmitValue={(value) => onUpdate({ dexterityBonus: value })}
+					/>
+					<StatField
+						label="Presence"
+						className="min-w-0 flex-1"
+						value={character.presenceBonus}
+						addition={stats.presence - character.presenceBonus}
+						onSubmitValue={(value) => onUpdate({ presenceBonus: value })}
+					/>
 				</div>
 			</div>
 
@@ -217,7 +163,7 @@ export function CharacterEditor({
 			>
 				<p className="mb-4 text-sm font-medium text-pretty text-gray-300">
 					Define three experiences from your character's past. Each experience
-					gives you one attribute bonus and aspect bonus.
+					gives you one attribute bonus.
 				</p>
 
 				<div className="grid gap-6">
@@ -392,14 +338,21 @@ function ExperienceList({
 	onChange: (experiences: CharacterExperience[]) => void
 }) {
 	return (
-		<ul className="flex flex-col gap-3">
+		<ul className="grid gap-2">
 			{experiences.map((experience, index) => (
-				<li key={index} className="flex items-center gap-2">
+				<li
+					key={index}
+					className="group flex items-start gap-3 rounded bg-gray-900 p-2"
+				>
 					<div className="flex-1">
-						<h3 className="heading-xl leading-6">{experience.description}</h3>
-						<p className="text-gray-400">
-							+1 {startCase(experience.attributeId)}, +1{" "}
-							{startCase(experience.aspectId)}
+						<h3 className="mb-1 font-medium">{experience.description}</h3>
+						<p className="text-sm text-gray-400">
+							+1{" "}
+							{experience.attributeId &&
+								startCase(
+									attributes[experience.attributeId as keyof typeof attributes]
+										?.name,
+								)}
 						</p>
 					</div>
 					<Tooltip content="Remove this experience">
@@ -423,11 +376,10 @@ function ExperienceForm({
 }) {
 	const [description, setDescription] = useState("")
 	const [attributeId, setAttributeId] = useState(Object.keys(attributes)[0]!)
-	const [aspectId, setAspectId] = useState(Object.keys(aspects)[0]!)
 	return (
 		<form
 			action={() => {
-				onSubmit({ description, aspectId, attributeId })
+				onSubmit({ description, attributeId })
 				setDescription("")
 			}}
 		>
@@ -448,19 +400,6 @@ function ExperienceForm({
 					onChange={(event) => setAttributeId(event.target.value)}
 				>
 					{Object.entries(attributes).map(([id, item]) => (
-						<option key={id} value={id}>
-							{item.name}
-						</option>
-					))}
-				</SelectField>
-
-				<SelectField
-					className="w-32"
-					label="Aspect bonus"
-					value={aspectId}
-					onChange={(event) => setAspectId(event.target.value)}
-				>
-					{Object.entries(aspects).map(([id, item]) => (
 						<option key={id} value={id}>
 							{item.name}
 						</option>

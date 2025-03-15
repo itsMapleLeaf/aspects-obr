@@ -5,7 +5,6 @@ export type CharacterExperience = typeof CharacterExperience.inferOut
 export const CharacterExperience = type({
 	description: "string",
 	attributeId: "string",
-	aspectId: "string",
 })
 
 export type Character = typeof Character.inferOut
@@ -24,11 +23,6 @@ export const Character = type({
 	"senseBonus": "number = 0",
 	"dexterityBonus": "number = 0",
 	"presenceBonus": "number = 0",
-	"fireBonus": "number = 0",
-	"waterBonus": "number = 0",
-	"windBonus": "number = 0",
-	"lightBonus": "number = 0",
-	"darknessBonus": "number = 0",
 	"ownerId?": "string",
 	"imageUrl": "(string | null)?",
 })
@@ -44,11 +38,6 @@ export function createCharacter(name: string): Character {
 		senseBonus: 0,
 		dexterityBonus: 0,
 		presenceBonus: 0,
-		fireBonus: 0,
-		waterBonus: 0,
-		windBonus: 0,
-		lightBonus: 0,
-		darknessBonus: 0,
 	}
 }
 
@@ -57,11 +46,6 @@ export interface ComputedCharacter {
 	sense: number
 	dexterity: number
 	presence: number
-	fire: number
-	water: number
-	wind: number
-	light: number
-	darkness: number
 	maxHits: number
 	maxFatigue: number
 }
@@ -72,11 +56,6 @@ export function getComputedCharacter(character: Character): ComputedCharacter {
 		sense: 1 + character.senseBonus,
 		dexterity: 1 + character.dexterityBonus,
 		presence: 1 + character.presenceBonus,
-		fire: 0 + character.fireBonus,
-		water: 0 + character.waterBonus,
-		wind: 0 + character.windBonus,
-		light: 0 + character.lightBonus,
-		darkness: 0 + character.darknessBonus,
 	}
 
 	const characterLineages = character.lineages ?? []
@@ -84,8 +63,11 @@ export function getComputedCharacter(character: Character): ComputedCharacter {
 		const lineage = lineages.find((l) => l.name === lineageName)
 		if (lineage) {
 			for (const aspect of lineage.aspects) {
-				stats[aspect.name.toLowerCase() as keyof typeof stats] +=
-					2 / characterLineages.length
+				const aspectName = aspect.name.toLowerCase()
+				if (aspectName in stats) {
+					stats[aspectName as keyof typeof stats] +=
+						2 / characterLineages.length
+				}
 			}
 		}
 	}
@@ -100,11 +82,8 @@ export function getComputedCharacter(character: Character): ComputedCharacter {
 
 	if (character.experiences) {
 		for (const experience of character.experiences) {
-			if (experience.attributeId) {
+			if (experience.attributeId && experience.attributeId in stats) {
 				stats[experience.attributeId as keyof typeof stats] += 1
-			}
-			if (experience.aspectId) {
-				stats[experience.aspectId as keyof typeof stats] += 1
 			}
 		}
 	}
