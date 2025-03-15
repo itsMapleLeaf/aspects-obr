@@ -10,6 +10,7 @@ import {
 	CORE_ATTRIBUTE_MIN,
 	CORE_ATTRIBUTE_POINTS,
 	lineages,
+	MAX_ATTRIBUTE_VALUE,
 	personas,
 } from "../data.ts"
 import { usePartyPlayers, usePlayer } from "../hooks/obr.ts"
@@ -67,10 +68,24 @@ export function CharacterEditor({
 		0,
 	)
 
-	// Validate totals
-	const isCoreAttributesValid = coreAttributesTotal === CORE_ATTRIBUTE_POINTS
-	const isAspectAttributesValid =
+	// Validate sums
+	const isCoreAttributeSumValid = coreAttributesTotal === CORE_ATTRIBUTE_POINTS
+	const isAspectAttributeSumValid =
 		aspectAttributesTotal === ASPECT_ATTRIBUTE_POINTS
+
+	const anyCoreAttributeOutOfRange = coreAttributeValues.some(
+		(value) => value < CORE_ATTRIBUTE_MIN || value > MAX_ATTRIBUTE_VALUE,
+	)
+
+	const anyAspectAttributeOutOfRange = aspectAttributeValues.some(
+		(value) => value < ASPECT_ATTRIBUTE_MIN || value > MAX_ATTRIBUTE_VALUE,
+	)
+
+	// Combined validation
+	const isCoreAttributesValid =
+		isCoreAttributeSumValid && !anyCoreAttributeOutOfRange
+	const isAspectAttributesValid =
+		isAspectAttributeSumValid && !anyAspectAttributeOutOfRange
 
 	const updateAttributeScore = (attribute: string, value: number) => {
 		onUpdate({
@@ -135,8 +150,9 @@ export function CharacterEditor({
 						))}
 						{!isCoreAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
-								Assign exactly {CORE_ATTRIBUTE_POINTS} total points to core
-								attributes (minimum {CORE_ATTRIBUTE_MIN} each)
+								{anyCoreAttributeOutOfRange
+									? `Core attributes must be between ${CORE_ATTRIBUTE_MIN} and ${MAX_ATTRIBUTE_VALUE}.`
+									: `Assign exactly ${CORE_ATTRIBUTE_POINTS} total points to core attributes.`}
 							</p>
 						)}
 					</div>
@@ -162,8 +178,9 @@ export function CharacterEditor({
 						))}
 						{!isAspectAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
-								Assign exactly {ASPECT_ATTRIBUTE_POINTS} total points to aspect
-								attributes (minimum {ASPECT_ATTRIBUTE_MIN} each)
+								{anyAspectAttributeOutOfRange
+									? `Aspect attributes must be between ${ASPECT_ATTRIBUTE_MIN} and ${MAX_ATTRIBUTE_VALUE}.`
+									: `Assign exactly ${ASPECT_ATTRIBUTE_POINTS} total points to aspect attributes.`}
 							</p>
 						)}
 					</div>

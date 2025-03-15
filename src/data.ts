@@ -3,6 +3,7 @@ export const ASPECT_ATTRIBUTE_POINTS = 8
 export const CORE_ATTRIBUTE_MIN = 1
 export const ASPECT_ATTRIBUTE_MIN = 0
 export const ASPECT_ACTIONS_COUNT = 5
+export const MAX_ATTRIBUTE_VALUE = 5
 
 export const attributes = {
 	strength: {
