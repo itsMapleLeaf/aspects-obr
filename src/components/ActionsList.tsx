@@ -37,6 +37,12 @@ export function ActionsList({
 	// Use character attribute scores directly - no need for computed stats
 	const attributeScores = character.attributeScores || {}
 
+	// Helper function to check if an action has mechanical effects
+	function hasNoMechanicalEffect(action: (typeof aspectSkills)[0]): boolean {
+		// An action has no mechanical effect if the effect field is empty
+		return !action.effect
+	}
+
 	function handleActionClick(actionName: string, attributeName: string) {
 		const attributeKey = attributeName.toLowerCase()
 		const diceCount = attributeScores[attributeKey] || 1
@@ -58,9 +64,8 @@ export function ActionsList({
 		const skill = aspectSkills.find((s) => s.name === skillName)
 		// For now, all aspect actions use fatigue except for narrative-only actions
 		// This should be updated when fatigue actions are properly tagged in the data
-		const isFatigueAction =
-			(skill && skill.effect.includes("deal")) || skill?.effect.includes("hit")
-		const fatigueCost = isFatigueAction ? 1 : 0
+		const hasNarrationOnlyEffect = skill && hasNoMechanicalEffect(skill)
+		const fatigueCost = hasNarrationOnlyEffect ? 0 : 1
 
 		onRollAction?.(
 			`${skillName} (${aspectName})`,
@@ -104,20 +109,28 @@ export function ActionsList({
 				})}
 			</div>
 
+			{/* Aspect actions */}
 			<div className="flex flex-wrap gap-x-6 gap-y-2">
 				{Object.values(aspects).map((aspect) => {
 					const aspectKey = aspect.name.toLowerCase()
 					const aspectValue = attributeScores[aspectKey] || 0
 
+					// Skip rendering if no points in this aspect
+					if (aspectValue === 0) return null
+
 					// Filter aspect actions
 					const aspectActions = actionsByAspect[aspect.name]?.filter(
-						(skill) => {
-							// If showing all, or if this is selected and aspect value > 0
-							return (
-								showAllAspectActions ||
-								(character.selectedAspectSkills?.includes(skill.name) &&
-									aspectValue > 0)
+						(action) => {
+							const isNarrationOnly = hasNoMechanicalEffect(action)
+							const isSelected = character.selectedAspectSkills?.includes(
+								action.name,
 							)
+
+							// Show if any of these conditions are true:
+							// 1. The "Show all" checkbox is checked
+							// 2. This is a narrative-only action (like Illuminate)
+							// 3. The action is selected by the character
+							return showAllAspectActions || isNarrationOnly || isSelected
 						},
 					)
 
@@ -134,23 +147,20 @@ export function ActionsList({
 									const isSelected =
 										character.selectedAspectSkills?.includes(action.name) ??
 										false
-									// For narrative-only actions like Illuminate, they can be used even with 0 score
-									const isNarrativeOnly =
-										!action.effect.includes("deal") &&
-										!action.effect.includes("hit")
-									const canUse = isNarrativeOnly || aspectValue > 0
+									const isNarrationOnly = hasNoMechanicalEffect(action)
 
 									return (
 										<Tooltip
 											key={action.name}
-											content={`${action.effect}${action.description ? ` - ${action.description}` : ""}${action.effect.includes("deal") || action.effect.includes("hit") ? " (Uses 1 fatigue)" : ""}${isSelected ? " (Selected)" : ""}`}
+											content={`${action.effect ? action.effect : action.description}${action.effect && action.description ? ` - ${action.description}` : ""}${isNarrationOnly ? "" : " (Uses 1 fatigue)"}${isSelected ? " (Selected)" : ""}`}
 										>
 											<SmallSolidButton
 												onClick={() =>
 													handleAspectSkillClick(action.name, aspect.name)
 												}
-												className={`${!isSelected ? "opacity-50" : ""} ${!canUse ? "cursor-not-allowed" : ""}`}
-												disabled={!canUse}
+												className={
+													!isSelected && !isNarrationOnly ? "opacity-50" : ""
+												}
 											>
 												{action.name}
 											</SmallSolidButton>
@@ -163,6 +173,7 @@ export function ActionsList({
 				})}
 			</div>
 
+			{/* Show all aspect actions checkbox - KEEP THIS AT THE BOTTOM */}
 			<div className="flex items-center">
 				<input
 					type="checkbox"

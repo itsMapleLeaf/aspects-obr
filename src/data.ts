@@ -318,7 +318,7 @@ export const aspectSkills = [
 		name: "Illuminate",
 		aspect: aspects.light,
 		description: "Create revealing spheres of light",
-		effect: "Create revealing spheres of light",
+		effect: "",
 	},
 
 	// Darkness aspect skills

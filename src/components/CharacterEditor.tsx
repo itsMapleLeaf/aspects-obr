@@ -169,33 +169,6 @@ export function CharacterEditor({
 						{!isAspectAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
 								Assign exactly: 0, 0, 1, 2, 4 to aspect attributes
-								<button
-									type="button"
-									className="ml-2 text-xs underline"
-									onClick={() => {
-										console.group("Aspect Attributes Debug")
-										console.log(
-											"Current Values:",
-											Object.fromEntries(
-												Object.keys(aspects).map((key) => [
-													key,
-													attributeScores[key] ?? 0,
-												]),
-											),
-										)
-										console.log(
-											"Expected Distribution:",
-											aspectAttributeDistribution,
-										)
-										console.log(
-											"Actual Distribution:",
-											aspectAttributeValues.sort(),
-										)
-										console.groupEnd()
-									}}
-								>
-									Debug
-								</button>
 							</p>
 						)}
 					</div>
@@ -296,22 +269,32 @@ export function CharacterEditor({
 
 				<div className="grid gap-4">
 					{Object.values(aspects).map((aspect) => {
-						const aspectActions = aspectSkills.filter(
+						const allAspectActions = aspectSkills.filter(
 							(skill) => skill.aspect === aspect,
 						)
 						const aspectValue = attributeScores[aspect.name.toLowerCase()] ?? 0
 						const isZeroValue = aspectValue === 0
+
+						// Split actions into selectable (with effects) and narrative (without effects)
+						const selectableActions = allAspectActions.filter(
+							(action) => !!action.effect,
+						)
+						const narrativeActions = allAspectActions.filter(
+							(action) => !action.effect,
+						)
 
 						return (
 							<div
 								key={aspect.name}
 								className={`grid gap-2 ${isZeroValue ? "opacity-75" : ""}`}
 							>
-								<h3 className="text-md font-medium">
+								<h3 className="text-xl font-light">
 									{aspect.name} ({aspectValue})
 								</h3>
+
+								{/* Selectable actions */}
 								<div className="grid grid-cols-2 gap-3">
-									{aspectActions.map((action) => {
+									{selectableActions.map((action) => {
 										const isSelected = character.selectedAspectSkills?.includes(
 											action.name,
 										)
@@ -335,6 +318,22 @@ export function CharacterEditor({
 										)
 									})}
 								</div>
+
+								{/* Narrative-only actions */}
+								{narrativeActions.length > 0 && aspectValue > 0 && (
+									<>
+										<h4 className="mt-2 text-lg font-light text-gray-200">
+											Other Actions
+										</h4>
+										<ul className="grid gap-x-4 gap-y-1">
+											{narrativeActions.map((action) => (
+												<li key={action.name} className="text-sm text-gray-300">
+													<strong>{action.name}</strong> - {action.description}
+												</li>
+											))}
+										</ul>
+									</>
+								)}
 							</div>
 						)
 					})}
@@ -359,7 +358,7 @@ function AttributeDropdown({
 }) {
 	return (
 		<div className={`flex items-center gap-3 ${className}`}>
-			<label className="w-24 text-sm font-medium">{label}</label>
+			<label className="w-20 font-medium">{label}</label>
 			<select
 				value={value}
 				onChange={(event) => onSubmitValue(Number(event.target.value))}
