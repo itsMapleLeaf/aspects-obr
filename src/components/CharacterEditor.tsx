@@ -1,5 +1,5 @@
 import OBR from "@owlbear-rodeo/sdk"
-import { Character } from "../character.ts"
+import { Character, randomizeCharacter } from "../character.ts"
 import {
 	ASPECT_ACTIONS_COUNT,
 	ASPECT_ATTRIBUTE_MIN,
@@ -17,6 +17,7 @@ import { usePartyPlayers, usePlayer } from "../hooks/obr.ts"
 import { toggleInArray } from "../lib/utils.ts"
 import { ActionsList } from "./ActionsList.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
+import { RandomizeButton } from "./RandomizeButton.tsx"
 import { Icon } from "./ui/Icon.tsx"
 import { InputField } from "./ui/InputField.tsx"
 import { OptionCard } from "./ui/OptionCard.tsx"
@@ -125,6 +126,10 @@ export function CharacterEditor({
 						<PlayerSelect
 							playerId={character.ownerId}
 							onChange={(ownerId) => onUpdate({ ownerId })}
+						/>
+
+						<RandomizeButton
+							onRandomize={() => onUpdate(randomizeCharacter())}
 						/>
 					</div>
 				</div>
