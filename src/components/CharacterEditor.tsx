@@ -17,6 +17,7 @@ import { usePartyPlayers, usePlayer } from "../hooks/obr.ts"
 import { toggleInArray } from "../lib/utils.ts"
 import { ActionsList } from "./ActionsList.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
+import { CopyMarkdownButton } from "./CopyMarkdownButton.tsx"
 import { RandomizeButton } from "./RandomizeButton.tsx"
 import { Icon } from "./ui/Icon.tsx"
 import { InputField } from "./ui/InputField.tsx"
@@ -128,9 +129,12 @@ export function CharacterEditor({
 							onChange={(ownerId) => onUpdate({ ownerId })}
 						/>
 
-						<RandomizeButton
-							onRandomize={() => onUpdate(randomizeCharacter())}
-						/>
+						<div className="flex gap-2 *:flex-1">
+							<RandomizeButton
+								onRandomize={() => onUpdate(randomizeCharacter())}
+							/>
+							<CopyMarkdownButton character={character} />
+						</div>
 					</div>
 				</div>
 
