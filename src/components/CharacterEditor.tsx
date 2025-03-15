@@ -2,7 +2,13 @@ import OBR from "@owlbear-rodeo/sdk"
 import { isEqual } from "es-toolkit"
 import { subtract } from "es-toolkit/compat"
 import { Character } from "../character.ts"
-import { aspects, attributes, lineages, personas } from "../data.ts"
+import {
+	aspects,
+	aspectSkills,
+	attributes,
+	lineages,
+	personas,
+} from "../data.ts"
 import { usePartyPlayers, usePlayer } from "../hooks/obr.ts"
 import { toggleInArray } from "../lib/utils.ts"
 import { ActionsList } from "./ActionsList.tsx"
@@ -226,14 +232,14 @@ export function CharacterEditor({
 					</p>
 				)}
 
-				<div className="grid grid-cols-2 gap-3">
+				<div className="grid grid-cols-2 items-start gap-3">
 					{lineages.map((lineage) => (
 						<OptionCard
 							type="checkbox"
 							key={lineage.name}
 							label={lineage.name}
 							description={lineage.ability}
-							title={lineage.example}
+							aside={`Examples: ${lineage.example}`}
 							checked={character.lineages?.includes(lineage.name)}
 							onChange={() => {
 								onUpdate({
@@ -257,14 +263,14 @@ export function CharacterEditor({
 					</p>
 				)}
 
-				<div className="grid grid-cols-2 gap-3">
+				<div className="grid grid-cols-2 items-start gap-3">
 					{personas.map((persona) => (
 						<OptionCard
 							type="checkbox"
 							key={persona.name}
 							label={persona.name}
 							description={persona.ability}
-							title={persona.description}
+							aside={persona.description}
 							checked={character.personas?.includes(persona.name)}
 							onChange={() => {
 								onUpdate({
@@ -273,6 +279,65 @@ export function CharacterEditor({
 							}}
 						/>
 					))}
+				</div>
+			</ToggleSection>
+
+			<ToggleSection title="Aspect Actions">
+				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
+					Aspect actions are the various ways your character can perform aspect
+					art.
+				</p>
+
+				{character.selectedAspectSkills?.length !== 3 && (
+					<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
+						Select 3 aspect actions.
+					</p>
+				)}
+
+				<div className="grid gap-4">
+					{Object.values(aspects).map((aspect) => {
+						const aspectActions = aspectSkills.filter(
+							(skill) => skill.aspect === aspect,
+						)
+						const aspectValue = attributeScores[aspect.name.toLowerCase()] ?? 0
+						const isZeroValue = aspectValue === 0
+
+						return (
+							<div
+								key={aspect.name}
+								className={`grid gap-2 ${isZeroValue ? "opacity-75" : ""}`}
+							>
+								<h3 className="text-md font-medium">
+									{aspect.name} ({aspectValue})
+								</h3>
+								<div className="grid grid-cols-2 gap-3">
+									{aspectActions.map((action) => {
+										const isSelected = character.selectedAspectSkills?.includes(
+											action.name,
+										)
+										return (
+											<OptionCard
+												type="checkbox"
+												key={action.name}
+												label={action.name}
+												description={action.effect}
+												aside={action.description}
+												checked={isSelected}
+												onChange={() => {
+													onUpdate({
+														selectedAspectSkills: toggleInArray(
+															character.selectedAspectSkills,
+															action.name,
+														),
+													})
+												}}
+											/>
+										)
+									})}
+								</div>
+							</div>
+						)
+					})}
 				</div>
 			</ToggleSection>
 		</main>

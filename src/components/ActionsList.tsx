@@ -120,9 +120,6 @@ export function ActionsList({
 			</div>
 
 			<div className="mt-4">
-				<h2 className="mb-2 text-center text-lg font-semibold">
-					Aspect Skills
-				</h2>
 				<div className="flex flex-wrap gap-x-6 gap-y-4">
 					{Object.values(aspects).map((aspect) => {
 						return (
@@ -142,11 +139,7 @@ export function ActionsList({
 													onClick={() =>
 														handleAspectSkillClick(skill.name, aspect.name)
 													}
-													className={
-														isSelected
-															? "bg-primary-600 hover:bg-primary-700"
-															: ""
-													}
+													className={isSelected ? "" : "opacity-50"}
 												>
 													{skill.name}
 												</SmallSolidButton>
