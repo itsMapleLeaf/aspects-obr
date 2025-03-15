@@ -1,3 +1,7 @@
+// Character creation constants
+export const CORE_ATTRIBUTE_DISTRIBUTION = [1, 2, 2, 3, 5] as const
+export const ASPECT_ATTRIBUTE_DISTRIBUTION = [0, 0, 2, 3, 5] as const
+
 export const attributes = {
 	strength: {
 		name: "Strength",

@@ -3,9 +3,11 @@ import { isEqual } from "es-toolkit"
 import { subtract } from "es-toolkit/compat"
 import { Character } from "../character.ts"
 import {
+	ASPECT_ATTRIBUTE_DISTRIBUTION,
 	aspects,
 	aspectSkills,
 	attributes,
+	CORE_ATTRIBUTE_DISTRIBUTION,
 	lineages,
 	personas,
 } from "../data.ts"
@@ -32,9 +34,12 @@ function getCharacterPersonas(character: Character) {
 // Validation functions for attribute distributions
 function isValidAttributeDistribution(
 	values: number[],
-	requiredDistribution: number[],
+	requiredDistribution: readonly number[],
 ) {
-	return isEqual(values.sort(subtract), requiredDistribution.sort(subtract))
+	return isEqual(
+		values.sort(subtract),
+		[...requiredDistribution].sort(subtract),
+	)
 }
 
 export function CharacterEditor({
@@ -55,34 +60,36 @@ export function CharacterEditor({
 	const characterPersonas = getCharacterPersonas(character)
 	const attributeScores = character.attributeScores || {}
 
-	// Required distributions
-	const coreAttributeDistribution = [1, 2, 2, 3, 5]
-	const aspectAttributeDistribution = [0, 0, 1, 2, 4]
-
 	// Unique options for dropdowns
 	const coreAttributeOptions = Array.from(
-		new Set(coreAttributeDistribution),
+		new Set(CORE_ATTRIBUTE_DISTRIBUTION),
 	).sort(subtract)
 	const aspectAttributeOptions = Array.from(
-		new Set(aspectAttributeDistribution),
+		new Set(ASPECT_ATTRIBUTE_DISTRIBUTION),
 	).sort(subtract)
 
-	// Get current values
-	const coreAttributeValues = Object.keys(attributes).map(
-		(key) => attributeScores[key] ?? 1,
-	)
-	const aspectAttributeValues = Object.keys(aspects).map(
-		(key) => attributeScores[key] ?? 0,
-	)
+	const coreAttributeValues = Object.keys(attributes).map((key) => {
+		const value = attributeScores[key]
+		return value != null && CORE_ATTRIBUTE_DISTRIBUTION.includes(value)
+			? value
+			: CORE_ATTRIBUTE_DISTRIBUTION[0]
+	})
+
+	const aspectAttributeValues = Object.keys(aspects).map((key) => {
+		const value = attributeScores[key]
+		return value != null && ASPECT_ATTRIBUTE_DISTRIBUTION.includes(value)
+			? value
+			: ASPECT_ATTRIBUTE_DISTRIBUTION[0]
+	})
 
 	// Validate distributions
 	const isCoreAttributesValid = isValidAttributeDistribution(
 		coreAttributeValues,
-		coreAttributeDistribution,
+		CORE_ATTRIBUTE_DISTRIBUTION,
 	)
 	const isAspectAttributesValid = isValidAttributeDistribution(
 		aspectAttributeValues,
-		aspectAttributeDistribution,
+		ASPECT_ATTRIBUTE_DISTRIBUTION,
 	)
 
 	const updateAttributeScore = (attribute: string, value: number) => {
@@ -146,7 +153,8 @@ export function CharacterEditor({
 						))}
 						{!isCoreAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
-								Assign exactly one of each: 1, 2, 2, 3, 5 to core attributes
+								Assign exactly one of each:{" "}
+								{CORE_ATTRIBUTE_DISTRIBUTION.join(", ")} to core attributes
 							</p>
 						)}
 					</div>
@@ -168,7 +176,8 @@ export function CharacterEditor({
 						))}
 						{!isAspectAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
-								Assign exactly: 0, 0, 1, 2, 4 to aspect attributes
+								Assign exactly: {ASPECT_ATTRIBUTE_DISTRIBUTION.join(", ")} to
+								aspect attributes
 							</p>
 						)}
 					</div>
@@ -195,8 +204,7 @@ export function CharacterEditor({
 
 			<ToggleSection title="Lineage">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Your lineage(s) determine your physical appearance and traits. Hover
-					over each one for examples.
+					Your lineage determine your physical appearance and traits.
 				</p>
 
 				{(characterLineages.length === 0 || characterLineages.length > 2) && (
@@ -205,7 +213,7 @@ export function CharacterEditor({
 					</p>
 				)}
 
-				<div className="grid grid-cols-2 items-start gap-3">
+				<div className="grid grid-cols-2 gap-3">
 					{lineages.map((lineage) => (
 						<OptionCard
 							type="checkbox"
@@ -226,8 +234,8 @@ export function CharacterEditor({
 
 			<ToggleSection title="Persona">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Your persona(s) determine your character's role and alignment. Hover
-					over each one for examples.
+					Your persona defines your role in the group and your approach to
+					solving problems.
 				</p>
 
 				{(characterPersonas.length === 0 || characterPersonas.length > 2) && (
@@ -236,7 +244,7 @@ export function CharacterEditor({
 					</p>
 				)}
 
-				<div className="grid grid-cols-2 items-start gap-3">
+				<div className="grid grid-cols-2 gap-3">
 					{personas.map((persona) => (
 						<OptionCard
 							type="checkbox"
