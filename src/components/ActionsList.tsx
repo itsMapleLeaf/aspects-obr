@@ -79,7 +79,7 @@ export function ActionsList({
 	return (
 		<div className={twMerge("flex flex-col gap-4", className)}>
 			{/* Core attribute actions */}
-			<div className="flex flex-wrap gap-x-6 gap-y-2">
+			<div className="flex gap-x-6 gap-y-2">
 				{Object.values(attributes).map((attribute) => {
 					const attributeKey = attribute.name.toLowerCase()
 					const attributeValue = attributeScores[attributeKey] || 0
@@ -111,7 +111,7 @@ export function ActionsList({
 			</div>
 
 			{/* Aspect actions */}
-			<div className="flex flex-wrap gap-x-6 gap-y-2">
+			<div className="flex gap-x-6 gap-y-2">
 				{Object.values(aspects).map((aspect) => {
 					const aspectKey = aspect.name.toLowerCase()
 					const aspectValue = attributeScores[aspectKey] || 0
