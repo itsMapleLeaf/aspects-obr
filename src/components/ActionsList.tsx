@@ -3,7 +3,13 @@ import { twMerge } from "tailwind-merge"
 import { Tooltip } from "~/components/ui/Tooltip"
 import type { Character } from "../character.ts"
 import { getComputedCharacter } from "../character.ts"
-import { actions, aspectSkills, aspects, attributes } from "../data.ts"
+import {
+	actions,
+	aspects,
+	aspectSkills,
+	attributes,
+	lineages,
+} from "../data.ts"
 import { SmallSolidButton } from "./ui/SmallSolidButton"
 
 interface ActionsListProps {
@@ -27,7 +33,7 @@ export function ActionsList({
 		(action) => action.attribute.name,
 	)
 
-	const aspectSkillsByAspect = groupBy(
+	const skillsByAspect = groupBy(
 		Object.values(aspectSkills),
 		(skill) => skill.aspect.name,
 	)
@@ -50,12 +56,33 @@ export function ActionsList({
 	}
 
 	function handleAspectSkillClick(skillName: string, aspectName: string) {
-		const aspectKey = aspectName.toLowerCase() as keyof typeof characterStats
-		const diceCount = characterStats[aspectKey] || 1
+		const aspectKey = aspectName.toLowerCase()
+		let attributeValue = 1 // Default to 1 die if we can't determine the linked attribute
 
-		if (onRollAction) {
-			onRollAction(`${skillName} (${aspectName})`, diceCount, 1, character.id)
+		// Find the linked attribute for this aspect based on lineage
+		const characterLineages = character.lineages ?? []
+		for (const lineageName of characterLineages) {
+			const matchingLineage = lineages.find((l) => l.name === lineageName)
+			if (
+				matchingLineage?.aspects.some((a) => a.name.toLowerCase() === aspectKey)
+			) {
+				// This lineage has this aspect, use the appropriate attribute
+				// For now, we're using a fixed attribute value since we don't have aspect-attribute linking
+				attributeValue = 2
+				break
+			}
 		}
+
+		// Most aspect skills use fatigue, but some might not
+		const skill = aspectSkills.find((s) => s.name === skillName)
+		const fatigueCost = skill ? 1 : 0 // Default fatigue cost of 1 for aspect skills
+
+		onRollAction?.(
+			`${skillName} (${aspectName})`,
+			attributeValue,
+			fatigueCost,
+			character.id,
+		)
 	}
 
 	return (
@@ -92,46 +119,45 @@ export function ActionsList({
 				})}
 			</div>
 
-			<div className="flex flex-wrap gap-x-6 gap-y-2">
-				{Object.values(aspects).map((aspect) => {
-					const aspectKey =
-						aspect.name.toLowerCase() as keyof typeof characterStats
-					const aspectValue = characterStats[aspectKey] || 0
-					const disabled = aspectValue === 0
-
-					return (
-						<section key={aspect.name} className={disabled ? "opacity-50" : ""}>
-							<h3 className="mb-0.5 text-sm font-semibold">
-								{aspect.name} ({aspectValue})
-							</h3>
-							<ul className="flex flex-wrap gap-2">
-								{aspectSkillsByAspect[aspect.name]
-									?.filter((skill) =>
-										skill.drives.some(
-											(drive) =>
-												drive.name.toLowerCase() ===
-												character.drive?.toLowerCase(),
-										),
-									)
-									?.map((skill) => (
-										<Tooltip
-											key={skill.name}
-											content={`${skill.effect} (${aspectValue} dice)`}
-										>
-											<SmallSolidButton
-												onClick={() => {
-													if (disabled) return
-													handleAspectSkillClick(skill.name, aspect.name)
-												}}
+			<div className="mt-4">
+				<h2 className="mb-2 text-center text-lg font-semibold">
+					Aspect Skills
+				</h2>
+				<div className="flex flex-wrap gap-x-6 gap-y-4">
+					{Object.values(aspects).map((aspect) => {
+						return (
+							<section key={aspect.name}>
+								<h3 className="mb-0.5 text-sm font-semibold">{aspect.name}</h3>
+								<ul className="flex flex-wrap gap-2">
+									{skillsByAspect[aspect.name]?.map((skill) => {
+										const isSelected =
+											character.selectedAspectSkills?.includes(skill.name) ??
+											false
+										return (
+											<Tooltip
+												key={skill.name}
+												content={`${skill.description} - ${skill.effect}${isSelected ? " (Selected)" : ""}`}
 											>
-												{skill.name}
-											</SmallSolidButton>
-										</Tooltip>
-									))}
-							</ul>
-						</section>
-					)
-				})}
+												<SmallSolidButton
+													onClick={() =>
+														handleAspectSkillClick(skill.name, aspect.name)
+													}
+													className={
+														isSelected
+															? "bg-primary-600 hover:bg-primary-700"
+															: ""
+													}
+												>
+													{skill.name}
+												</SmallSolidButton>
+											</Tooltip>
+										)
+									})}
+								</ul>
+							</section>
+						)
+					})}
+				</div>
 			</div>
 		</div>
 	)

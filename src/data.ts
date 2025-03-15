@@ -11,6 +11,10 @@ export const attributes = {
 		name: "Dexterity",
 		description: "precision and acrobatics",
 	},
+	intellect: {
+		name: "Intellect",
+		description: "reasoning, knowledge, and problem-solving",
+	},
 	presence: {
 		name: "Presence",
 		description: "people smarts, influence, manipulation",
@@ -48,581 +52,398 @@ export const aspects = {
 export const lineages = [
 	{
 		name: "Furbearers",
-		// attributes: [attributes.strength, attributes.presence],
 		aspects: [aspects.fire],
 		example: "dogs, foxes, wolves, cats, rabbits, mice, bears, raccoons",
+		ability: "Party Tactics - Your rolls have +1 die per ally in medium range.",
 	},
 	{
 		name: "Scalebearers",
-		// attributes: [attributes.strength, attributes.dexterity],
 		aspects: [aspects.fire],
 		example: "snake, lizard, alligator, crocodile, dragons",
+		ability: "Hardened Scales - Increase your max hits by 5.",
 	},
 	{
 		name: "Aquatics",
-		// attributes: [attributes.sense, attributes.dexterity],
 		aspects: [aspects.water],
 		example: "fish, dolphins, other water-bound creatures",
+		ability:
+			"Oceanic Instinct - Water does not count as rough terrain. You can move two zones through water for 1 movement.",
 	},
 	{
 		name: "Avians",
-		// attributes: [attributes.sense, attributes.presence],
 		aspects: [aspects.wind],
 		example: "eagles, ravens, penguins, flamingo, all other birds",
+		ability:
+			"Flight - You may remain in a floorless zone where you would otherwise fall.",
 	},
 	{
 		name: "Arthropods",
-		// attributes: [attributes.sense, attributes.dexterity],
 		aspects: [aspects.light],
 		example: "insects, arachnids, bugs, most creatures with exoskeletons",
+		ability:
+			"Trillion Senses - You may reroll any failed Sense roll once per roll.",
 	},
 	{
 		name: "Devils",
-		// attributes: [attributes.strength, attributes.presence],
 		aspects: [aspects.darkness],
 		example: "demons, devils, succubus/incubus, vampires",
+		ability:
+			"Innate Charm - After applying modifiers, your Presence rolls always have no less than 3 dice.",
 	},
 ]
-
-export const drives = {
-	dominance: {
-		name: "Dominance",
-		description:
-			"you want to assert control through direct action and force of will",
-	},
-	empowerment: {
-		name: "Empowerment",
-		description:
-			"you find purpose in enhancing the potential of yourself and others",
-	},
-	protection: {
-		name: "Protection",
-		description:
-			"you find meaning in preserving the people and things you value",
-	},
-	adaptation: {
-		name: "Adaptation",
-		description:
-			"you value versatility, responsiveness, and adjusting to changing circumstances",
-	},
-	manipulation: {
-		name: "Manipulation",
-		description:
-			"you view the world as a complex system to influence as you see fit",
-	},
-}
-
-export const roles = {
-	metalworking: {
-		name: "Metalworking",
-		attribute: attributes.strength,
-		examples: "create tools, utensils, weapons, armor, other hardware",
-		drives: [drives.dominance, drives.adaptation],
-	},
-	farming: {
-		name: "Farming",
-		attribute: attributes.strength,
-		examples: "field workers, ranchers",
-		drives: [drives.empowerment, drives.protection],
-	},
-	lawEnforcement: {
-		name: "Law Enforcement & Protection",
-		attribute: attributes.strength,
-		examples: "knight (police), protector",
-		drives: [drives.dominance, drives.protection],
-	},
-	resources: {
-		name: "Resources",
-		attribute: attributes.strength,
-		examples: "mining, material transport",
-		drives: [drives.empowerment, drives.protection, drives.adaptation],
-	},
-	exploration: {
-		name: "Exploration & Navigation",
-		attribute: attributes.sense,
-		examples: "explorer, navigator, cartographer",
-		drives: [drives.adaptation, drives.manipulation],
-	},
-	investigation: {
-		name: "Investigation",
-		attribute: attributes.sense,
-		examples: "detective",
-		drives: [drives.dominance, drives.protection, drives.manipulation],
-	},
-	science: {
-		name: "Science",
-		attribute: attributes.sense,
-		examples:
-			"chemistry, astronomy, archaeology, biology, social science, herbalist, meteorologist",
-		drives: [drives.empowerment, drives.adaptation],
-	},
-	medicine: {
-		name: "Medicine",
-		attribute: attributes.sense,
-		examples: "doctor, nurse, surgeon, field medic",
-		drives: [drives.empowerment, drives.protection, drives.adaptation],
-	},
-	transportation: {
-		name: "Transportation",
-		attribute: attributes.dexterity,
-		examples: "wind ferry pilot, horse rider",
-		drives: [drives.empowerment, drives.adaptation],
-	},
-	crafting: {
-		name: "Crafting",
-		attribute: attributes.dexterity,
-		examples: "woodwork, toys, locksmithing, jewelry",
-		drives: [drives.dominance, drives.adaptation, drives.manipulation],
-	},
-	art: {
-		name: "Art",
-		attribute: attributes.dexterity,
-		examples: "painter, musician",
-		drives: [drives.dominance, drives.adaptation, drives.manipulation],
-	},
-	underworld: {
-		name: "Underworld",
-		attribute: attributes.dexterity,
-		examples: "burglars, smugglers, forgers, saboteurs, assassins, spies",
-		drives: [drives.dominance, drives.adaptation, drives.manipulation],
-	},
-	entertainment: {
-		name: "Entertainment",
-		attribute: attributes.presence,
-		examples: "actors, magicians, model, other performers",
-		drives: [drives.dominance, drives.adaptation, drives.manipulation],
-	},
-	socialWork: {
-		name: "Social Work",
-		attribute: attributes.presence,
-		examples: "receptionist, store clerk, surveyor",
-		drives: [drives.protection, drives.empowerment],
-	},
-	education: {
-		name: "Education",
-		attribute: attributes.presence,
-		examples: "academy professor, principals, instructors",
-		drives: [drives.protection, drives.empowerment, drives.manipulation],
-	},
-	law: {
-		name: "Law",
-		attribute: attributes.presence,
-		examples: "legislator, judge, lawyer",
-		drives: [drives.protection, drives.empowerment, drives.manipulation],
-	},
-}
-
-export const experiences = {
-	stoppedBreakIn: {
-		description: "stopped a break-in",
-		attributes: [attributes.strength],
-		aspects: [aspects.fire],
-	},
-	rebelliousUpbringing: {
-		description: "rebellious upbringing",
-		attributes: [attributes.strength],
-		aspects: [aspects.fire, aspects.darkness],
-	},
-	gotLostInWilderness: {
-		description: "got lost in the wilderness",
-		attributes: [attributes.sense],
-		aspects: [aspects.darkness, aspects.wind],
-	},
-	foragedForSurvival: {
-		description: "foraged for survival",
-		attributes: [attributes.sense],
-		aspects: [aspects.wind, aspects.light],
-	},
-	readLotsOfBooks: {
-		description: "read a lot of books",
-		attributes: [attributes.sense],
-		aspects: [aspects.light, aspects.water],
-	},
-	studiedTopicOfInterest: {
-		description: "intensely studied a topic of interest",
-		attributes: [attributes.sense],
-		aspects: [aspects.light, aspects.water],
-	},
-	trainedInMarksmanship: {
-		description: "trained in archery/marksmanship",
-		attributes: [attributes.dexterity],
-		aspects: [aspects.fire, aspects.wind],
-	},
-	tookGymnastics: {
-		description: "took gymnastics",
-		attributes: [attributes.dexterity],
-		aspects: [aspects.wind, aspects.water],
-	},
-	martialArtsExperience: {
-		description: "martial arts experience",
-		attributes: [attributes.dexterity],
-		aspects: [aspects.water, aspects.fire],
-	},
-	acquaintanceWithCrafter: {
-		description: "close acquaintance with a crafter",
-		attributes: [attributes.dexterity],
-		aspects: [aspects.light, aspects.water],
-	},
-	providedForFamily: {
-		description: "worked to provide for your family",
-		attributes: [attributes.presence],
-		aspects: [aspects.light],
-	},
-	classClown: {
-		description: "class clown",
-		attributes: [attributes.presence],
-		aspects: [aspects.wind],
-	},
-	metFriendlyOutlander: {
-		description: "met a friendly outlander",
-		attributes: [attributes.presence],
-		aspects: [aspects.water, aspects.wind],
-	},
-	livedInStrictHousehold: {
-		description: "lived in a strict household",
-		attributes: [attributes.presence],
-		aspects: [aspects.light, aspects.darkness],
-	},
-	experiencedHomelessness: {
-		description: "experienced homelessness",
-		attributes: [attributes.presence],
-		aspects: [aspects.darkness],
-	},
-	hadSeveralPartners: {
-		description: "had several partners",
-		attributes: [attributes.presence],
-		aspects: [aspects.wind, aspects.darkness],
-	},
-}
 
 export const actions = {
 	strike: {
 		name: "Strike",
 		attribute: attributes.strength,
-		description: "punch someone, damage equals number of successes",
+		description: "Attack a character with your fist or a weapon",
 	},
 	block: {
 		name: "Block",
 		attribute: attributes.strength,
-		description: "reduce damage by number of successes",
+		description: "Guard against an incoming attack",
 	},
-	dodge: {
-		name: "Dodge",
-		attribute: attributes.dexterity,
-		description: "roll more successes than damage to avoid it",
+	exert: {
+		name: "Exert",
+		attribute: attributes.strength,
+		description:
+			"Any general application of force: lifting things, pushing things, holding another character still, etc.",
 	},
-	jump: {
-		name: "Jump",
-		attribute: attributes.dexterity,
-		description: "gaps are a suggestion :)",
-	},
-	dash: {
-		name: "Dash",
-		attribute: attributes.dexterity,
-		description: "s p e e d",
-	},
-	sneak: {
-		name: "Sneak",
-		attribute: attributes.dexterity,
-		description: "sshhhh",
-	},
-	shoot: {
-		name: "Shoot",
-		attribute: attributes.dexterity,
-		description: "eat my crossbow bitch",
+	endure: {
+		name: "Endure",
+		attribute: attributes.strength,
+		description: "Resist external physical forces",
 	},
 	locate: {
 		name: "Locate",
 		attribute: attributes.sense,
-		description: "proactively find a thing",
+		description: "Proactively find something with your senses",
 	},
 	notice: {
 		name: "Notice",
 		attribute: attributes.sense,
-		description: "reactively see/hear/feel a thing",
+		description: "Reactively see, hear, or feel something",
+	},
+	focus: {
+		name: "Focus",
+		attribute: attributes.sense,
+		description:
+			"Resist external emotional or any other form of mental influence",
 	},
 	rest: {
 		name: "Rest",
 		attribute: attributes.sense,
-		description: "recover fatigue",
+		description: "Take a quick break, a comfy nap, or a good night's rest",
+	},
+	shoot: {
+		name: "Shoot",
+		attribute: attributes.dexterity,
+		description: "Fire a weapon to strike at a range",
+	},
+	dodge: {
+		name: "Dodge",
+		attribute: attributes.dexterity,
+		description: "Evade an incoming attack",
+	},
+	maneuver: {
+		name: "Maneuver",
+		attribute: attributes.dexterity,
+		description:
+			"Jumping, climbing, swimming, and other movements requiring precision and/or balance",
+	},
+	dash: {
+		name: "Dash",
+		attribute: attributes.dexterity,
+		description: "Move swiftly to get to your destination quicker",
+	},
+	sneak: {
+		name: "Sneak",
+		attribute: attributes.dexterity,
+		description: "Stay hidden and/or quiet",
+	},
+	aid: {
+		name: "Aid",
+		attribute: attributes.intellect,
+		description: "Offer first aid to someone else",
+	},
+	persuade: {
+		name: "Persuade",
+		attribute: attributes.intellect,
+		description: "Influence another character through reasoning",
+	},
+	intuit: {
+		name: "Intuit",
+		attribute: attributes.intellect,
+		description: "Apply understanding to solve a logical problem",
 	},
 	charm: {
 		name: "Charm",
 		attribute: attributes.presence,
-		description: "bribery",
+		description:
+			"Influence another character with bribery, flattery, or amusement",
 	},
 	intimidate: {
 		name: "Intimidate",
 		attribute: attributes.presence,
-		description: "blackmail",
-	},
-	deceive: {
-		name: "Deceive",
-		attribute: attributes.presence,
-		description: "try to lie convincingly",
+		description: "Influence another character with threats or blackmail",
 	},
 	read: {
 		name: "Read",
 		attribute: attributes.presence,
-		description: "try to see through lies, glean intent, or resist influence",
+		description: "Try to see through lies or glean someone's intent",
+	},
+	deceive: {
+		name: "Deceive",
+		attribute: attributes.presence,
+		description: "Try to lie convincingly",
 	},
 }
 
 export const aspectSkills = [
+	// Water aspect skills
 	{
-		name: "Accelerate",
-		aspect: aspects.wind,
-		drives: [drives.adaptation],
-		effect:
-			"Until your next action, give your allies # additional combat movements on their turn",
-	},
-	{
-		name: "Arc of Flame",
-		aspect: aspects.fire,
-		drives: [drives.dominance],
-		effect: "Deal 1 hit to # characters at short range (not immediate range)",
-	},
-	{
-		name: "Burning Aura",
-		aspect: aspects.fire,
-		drives: [drives.empowerment],
-		effect:
-			"# allies have +1 die on all of their strike, shoot, or aspect action rolls until your next action",
-	},
-	{
-		name: "Call of the Night",
-		aspect: aspects.darkness,
-		drives: [drives.empowerment, drives.manipulation],
-		effect: "All characters have +# dice on their rolls until your next action",
-	},
-	{
-		name: "Castle",
+		name: "Ice Bridge",
 		aspect: aspects.water,
-		drives: [drives.protection],
+		description: "Shape ice into walkable platforms",
 		effect:
-			"Prevent up to # hits to all allies at immediate range until your next action",
+			"Starting from an adjacent zone, draw a path of adjacent zones, 1 zone per success. All zones in this path gain solid floors that negate rough terrain and hazards.",
 	},
 	{
-		name: "Cinder Storm",
-		aspect: aspects.fire,
-		drives: [drives.dominance],
-		effect:
-			"Deal 1 hit to every ally and yourself, then deal (success: 2 hits) (failure: 1 hit) to all enemies",
-	},
-	{
-		name: "Discriminate",
-		aspect: aspects.darkness,
-		drives: [drives.manipulation],
-		effect:
-			"Every aspect check for a chosen aspect has -# dice until your next action",
-	},
-	{
-		name: "Drain",
-		aspect: aspects.darkness,
-		drives: [drives.dominance, drives.protection],
-		effect: "Deal 1 hit (success: then heal the amount of hits dealt)",
-	},
-	{
-		name: "Energize",
-		aspect: aspects.light,
-		drives: [drives.protection],
-		effect:
-			"Prevent a character from taking up to # fatigue until your next action",
-	},
-	{
-		name: "Expel",
-		aspect: aspects.wind,
-		drives: [drives.dominance],
-		effect: "Move # enemies at immediate range to any zone within medium range",
-	},
-	{
-		name: "Fair Play",
-		aspect: aspects.wind,
-		drives: [drives.empowerment, drives.manipulation],
-		effect: "Deal # fatigue to all enemies with 0 hits",
-	},
-	{
-		name: "Flame Strike",
-		aspect: aspects.fire,
-		drives: [drives.dominance],
-		effect: "Deal # of hits to a character at immediate range",
-	},
-	{
-		name: "Flamewall",
-		aspect: aspects.fire,
-		drives: [drives.adaptation, drives.protection],
-		effect:
-			"Choose a zone at short or immediate range. Until your next action, when any character enters or exits the chosen zone, they take # * 2 hits",
-	},
-	{
-		name: "Fluidity",
+		name: "Crystal Cage",
 		aspect: aspects.water,
-		drives: [drives.adaptation, drives.empowerment],
+		description: "Entrap a character in crystalline walls of ice",
 		effect:
-			"Reaction: after an ally makes a roll, allow them to reroll # of their dice and take the higher results",
-	},
-	{
-		name: "Focused Healing",
-		aspect: aspects.light,
-		drives: [drives.empowerment, drives.protection],
-		effect:
-			"Choose a character. The next time a chosen character makes an action which heals hits from one or more characters, heal # additional hits from the healed characters",
-	},
-	{
-		name: "Freeze",
-		aspect: aspects.water,
-		drives: [drives.adaptation],
-		effect:
-			"Choose a zone no further than medium range. Prevent # chosen characters in that zone from moving until your next action",
-	},
-	{
-		name: "Frostbite",
-		aspect: aspects.water,
-		drives: [drives.manipulation],
-		effect: "Deal # fatigue to a character at immediate range",
-	},
-	{
-		name: "Healing",
-		aspect: aspects.light,
-		drives: [drives.adaptation, drives.protection],
-		effect: "Heal # hits from a character within long range",
-	},
-	{
-		name: "Imperil",
-		aspect: aspects.darkness,
-		drives: [drives.manipulation],
-		effect: "A character has -# dice on their rolls until your next action",
-	},
-	{
-		name: "Inferno",
-		aspect: aspects.fire,
-		drives: [drives.dominance, drives.empowerment],
-		effect:
-			"A character's next strike, shoot, or aspect action deals (success: triple the hits) (failure: double the hits)",
-	},
-	{
-		name: "Inner Flame",
-		aspect: aspects.fire,
-		drives: [drives.adaptation, drives.dominance],
-		effect:
-			"After taking fatigue for this art, deal (success: your fatigue amount in hits) (failure: 1 hit) to a character in immediate range",
-	},
-	{
-		name: "Inspire",
-		aspect: aspects.light,
-		drives: [drives.empowerment],
-		effect:
-			"A character has +# dice on their rolls until the next time you use this art",
-	},
-	{
-		name: "Multicast",
-		aspect: aspects.wind,
-		drives: [drives.empowerment],
-		effect:
-			"Add # additional targets to a target character's next action. The target character chooses the targets",
-	},
-	{
-		name: "Overflow",
-		aspect: aspects.darkness,
-		drives: [drives.empowerment],
-		effect:
-			"Your allies have +# dice on all of their rolls until your next action. Take # fatigue",
-	},
-	{
-		name: "Pacify",
-		aspect: aspects.light,
-		drives: [drives.manipulation],
-		effect:
-			"Prevent a character from dealing up to # hits until your next action",
-	},
-	{
-		name: "Quick Swap",
-		aspect: aspects.wind,
-		drives: [drives.adaptation],
-		effect:
-			"Swap zones with another character (success: you choose the character) (failure: the character is random)",
-	},
-	{
-		name: "Ray of Equality",
-		aspect: aspects.light,
-		drives: [drives.dominance, drives.manipulation],
-		effect: "Deal # * 2 hits to the enemy with the highest toughness",
-	},
-	{
-		name: "Regret",
-		aspect: aspects.darkness,
-		drives: [drives.manipulation],
-		effect:
-			"Deal 1 fatigue to # enemies who've dealt hits since your last action",
-	},
-	{
-		name: "Restore",
-		aspect: aspects.light,
-		drives: [drives.protection],
-		effect: "Heal # hits from all allies in immediate range",
-	},
-	{
-		name: "Riftwalk",
-		aspect: aspects.darkness,
-		drives: [drives.adaptation],
-		effect:
-			"Mark your current zone and a chosen zone no further than a range of #. Until your next action, the marked zones are considered adjacent",
-	},
-	{
-		name: "Sear",
-		aspect: aspects.fire,
-		drives: [drives.manipulation],
-		effect:
-			"Deal # hits to all characters who used fire aspect art since your last action, including yourself.",
+			"Choose 1 zone per success within long range (5), then create a solid wall surrounding each zone. Characters cannot pass through this wall. Characters must deal at least 1 hit to a wall to destroy it.",
 	},
 	{
 		name: "Shield",
 		aspect: aspects.water,
-		drives: [drives.protection],
+		description: "Protect a character from harm with an icy shield",
 		effect:
-			"Prevent up to # hits on a character within long range until your next action",
+			"If a chosen character within long range (5) would take hits from an action, prevent 1 hit per success",
 	},
 	{
-		name: "Slide",
+		name: "Hailstorm",
 		aspect: aspects.water,
-		drives: [drives.adaptation],
+		description: "Summon an indiscriminate storm of piercing hailstones",
 		effect:
-			"Choose a zone no further than a range of #. Until your next turn, moving into that zone does not consume combat movement. All other combat movement restrictions still apply",
+			"All enemies within medium range (2) take 1 hit per success. On success, all allies within medium range take 1 hit per success.",
 	},
 	{
-		name: "Surge",
-		aspect: aspects.wind,
-		drives: [drives.empowerment],
-		effect: "Repeat the effect of a character's next action # times",
-	},
-	{
-		name: "Survival Instinct",
-		aspect: aspects.wind,
-		drives: [drives.adaptation, drives.protection],
-		effect:
-			"Give an ally +1 die (success: for each hit that ally has taken) on their next roll",
-	},
-	{
-		name: "Tsunami",
+		name: "Geyser",
 		aspect: aspects.water,
-		drives: [drives.adaptation, drives.dominance],
+		description: "Elevate character with a burst of water",
 		effect:
-			"Choose a zone at a range of #. Deal # * 2 hits (on failure: 1 hit) to every character in that zone",
+			"Choose up to 1 character per success. Those characters cannot take hits for 1 turn.",
+	},
+
+	// Wind aspect skills
+	{
+		name: "Dampen",
+		aspect: aspects.wind,
+		description: "Create a zone of absolute silence",
+		effect:
+			"For 1 round per success, characters in medium range (2) from your current location have -3 dice on hearing-based Sense rolls",
+	},
+	{
+		name: "Accelerate",
+		aspect: aspects.wind,
+		description: "Propel targets forward with gusts of wind",
+		effect:
+			"All characters in a chosen zone within long range (5) gain 1 movement per success for 1 round",
+	},
+	{
+		name: "Decelerate",
+		aspect: aspects.wind,
+		description: "Create headwinds to slow targets",
+		effect:
+			"All characters in a chosen zone within long range (5) lose 1 movement per success for 1 round",
+	},
+	{
+		name: "Amplify",
+		aspect: aspects.wind,
+		description: "Enhance acoustic vibrations",
+		effect:
+			"For 1 round per success, characters in short range from your current location have +3 dice on hearing-based Sense rolls",
+	},
+	{
+		name: "Gust",
+		aspect: aspects.wind,
+		description: "Shift a character's position with a strong gust of wind",
+		effect:
+			"Choose a zone within medium range (2). Move all characters in that zone by 1 zone per success.",
+	},
+
+	// Light aspect skills
+	{
+		name: "Hand of Brilliance",
+		aspect: aspects.light,
+		description: "Grant an inspiring glow to allies",
+		effect:
+			"Choose up to 1 character per success. Grant those characters an extra action on their turn",
+	},
+	{
+		name: "Heal",
+		aspect: aspects.light,
+		description: "Channel restorative light energy",
+		effect: "A chosen character within long range (5) heals 1 hit per success",
+	},
+	{
+		name: "Healing Aura",
+		aspect: aspects.light,
+		description: "Conjure a warm aura of illuminating wellness",
+		effect:
+			"All allies within short range (1) heal 2 hits on success, 1 hit on failure",
+	},
+	{
+		name: "Enhance",
+		aspect: aspects.light,
+		description: "Empower allies with radiant energy",
+		effect:
+			"For 1 round, a chosen character within medium range (2) gains +1 die per success (on this roll) on their rolls",
+	},
+	{
+		name: "Redemption",
+		aspect: aspects.light,
+		description: "Allow a character to reroll a failed roll",
+		effect: "Allow a character to reroll a failed roll",
+	},
+	{
+		name: "Purify",
+		aspect: aspects.light,
+		description: "Quickly conjure a purifying shield of light",
+		effect: "When you take hits, heal that many hits on another character",
+	},
+	{
+		name: "Illuminate",
+		aspect: aspects.light,
+		description: "Create revealing spheres of light",
+		effect: "Create revealing spheres of light",
+	},
+
+	// Darkness aspect skills
+	{
+		name: "Shade",
+		aspect: aspects.darkness,
+		description:
+			"Create a sphere of darkness so imposing, not even light can escape",
+		effect:
+			"For 1 round per success, characters within short range (1) have -3 dice on actions requiring targets and sight-based Sense actions",
+	},
+	{
+		name: "Confusion",
+		aspect: aspects.darkness,
+		description: "Create mental fog that clouds thinking",
+		effect:
+			"For 1 round per success, characters within short range (1) have -3 dice on Intellect actions",
+	},
+	{
+		name: "Riftwalk",
+		aspect: aspects.darkness,
+		description:
+			"Shift your surrounding reality, translating yourself through the fourth dimension",
+		effect: "Move to any zone within a range equal to the success count",
+	},
+	{
+		name: "Imperil",
+		aspect: aspects.darkness,
+		description: "Curse targets with a sudden, sharp pang of exhaustion",
+		effect:
+			"Choose 1 character per success within medium range (2). Chosen characters take 1 fatigue.",
+	},
+	{
+		name: "Weaken",
+		aspect: aspects.darkness,
+		description: "Drain a target's life force",
+		effect:
+			"A chosen character within long range (5) has -1 die per success for 1 round",
+	},
+
+	// Fire aspect skills
+	{
+		name: "Flame Wall",
+		aspect: aspects.fire,
+		description: "Create barriers of roaring flames",
+		effect:
+			"Choose 1 zone within long range (5) per success. Chosen zones deal 1 hit when entered or exited for one round",
+	},
+	{
+		name: "Burning",
+		aspect: aspects.fire,
+		description: "Wreath your attacks in searing flames",
+		effect:
+			"When making an action that deals hits, add 2 hits per success (on this roll)",
+	},
+	{
+		name: "Arc of Flame",
+		aspect: aspects.fire,
+		description: "Fling a circle of flame around yourself",
+		effect:
+			"Choose 1 target per success within short range (1). Deal 2 hits to each one.",
+	},
+	{
+		name: "Heating",
+		aspect: aspects.fire,
+		description: "Fill an area with oppressive heat",
+		effect:
+			"Choose 1 zone within medium range (2) per success. For 1 round, characters take 1 fatigue when entering or starting their turn in those zones.",
+	},
+	{
+		name: "Bolt",
+		aspect: aspects.fire,
+		description: "Deploy an indiscriminate bolt of lightning",
+		effect: "Deal 1 hit per success to a random enemy",
+	},
+]
+
+export const personas = [
+	{
+		name: "Commander",
+		description: "Empowers and strengthens allies",
+		ability:
+			"Battle Cry - Your allies within short range have +1 die on their rolls.",
+	},
+	{
+		name: "Fighter",
+		description: "Solves problems with physical force and prowess",
+		ability: "Unwavering - Your actions deal 1 extra hit.",
+	},
+	{
+		name: "Manipulator",
+		description: "Indirectly tips the scales of conflict in their favor",
+		ability: "Trickery - Adrenaline in combat costs 1 less fatigue.",
+	},
+	{
+		name: "Protector",
+		description: "Protects others from threats",
+		ability:
+			"Empowered Defender - In combat, your rolls have +1 die for each hit prevented since your last action.",
+	},
+	{
+		name: "Strategist",
+		description: "Excels in agility, adaptability, and field tactics",
+		ability: "Nimble - You have +1 movement.",
+	},
+	{
+		name: "Vitalist",
+		description: "Focuses on the well-being and recovery of others",
+		ability:
+			"Blessed Healer - When you heal 1 hit on another character, also heal 1 hit on yourself.",
 	},
 ]
 
 export const characterLevels = [
-	{ level: 1, attributePoints: 0, aspectPoints: 0 },
-	{ level: 2, attributePoints: 0, aspectPoints: 1 },
-	{ level: 3, attributePoints: 1, aspectPoints: 1 },
-	{ level: 4, attributePoints: 1, aspectPoints: 2 },
-	{ level: 5, attributePoints: 2, aspectPoints: 2 },
-	{ level: 6, attributePoints: 2, aspectPoints: 3 },
-	{ level: 7, attributePoints: 3, aspectPoints: 3 },
-	{ level: 8, attributePoints: 3, aspectPoints: 4 },
-	{ level: 9, attributePoints: 4, aspectPoints: 4 },
-	{ level: 10, attributePoints: 4, aspectPoints: 5 },
-	{ level: 11, attributePoints: 5, aspectPoints: 5 },
-	{ level: 12, attributePoints: 5, aspectPoints: 6 },
-	{ level: 13, attributePoints: 6, aspectPoints: 6 },
+	{ level: 1, attributePoints: 0 },
+	{ level: 2, attributePoints: 0 },
+	{ level: 3, attributePoints: 1 },
+	{ level: 4, attributePoints: 1 },
+	{ level: 5, attributePoints: 2 },
+	{ level: 6, attributePoints: 2 },
+	{ level: 7, attributePoints: 3 },
+	{ level: 8, attributePoints: 3 },
+	{ level: 9, attributePoints: 4 },
+	{ level: 10, attributePoints: 4 },
+	{ level: 11, attributePoints: 5 },
+	{ level: 12, attributePoints: 5 },
+	{ level: 13, attributePoints: 6 },
 ]

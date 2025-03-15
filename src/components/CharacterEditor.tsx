@@ -1,35 +1,40 @@
 import OBR from "@owlbear-rodeo/sdk"
-import { startCase } from "es-toolkit"
-import { useState } from "react"
-import { withoutIndex } from "~/lib/utils.ts"
+import { isEqual } from "es-toolkit"
+import { subtract } from "es-toolkit/compat"
+import { Character } from "../character.ts"
 import {
-	Character,
-	getComputedCharacter,
-	type CharacterExperience,
-} from "../character.ts"
-import {
+	aspects,
 	attributes,
 	characterLevels,
-	drives,
 	lineages,
-	roles,
+	personas,
 } from "../data.ts"
 import { usePartyPlayers, usePlayer } from "../hooks/obr.ts"
+import { toggleInArray } from "../lib/utils.ts"
 import { ActionsList } from "./ActionsList.tsx"
 import { CharacterResourceFields } from "./CharacterResourceFields.tsx"
-import { StatField } from "./StatField.tsx"
 import { Icon } from "./ui/Icon.tsx"
 import { InputField } from "./ui/InputField.tsx"
 import { OptionCard } from "./ui/OptionCard.tsx"
-import { SelectField } from "./ui/SelectField.tsx"
 import { SmallSolidButton } from "./ui/SmallSolidButton.tsx"
-import { SolidButton } from "./ui/SolidButton.tsx"
 import { SubmitTextArea } from "./ui/SubmitTextArea.tsx"
 import { ToggleSection } from "./ui/ToggleSection.tsx"
 import { Tooltip } from "./ui/Tooltip.tsx"
 
 function getCharacterLineages(character: Character) {
 	return lineages.filter((l) => character.lineages?.includes(l.name))
+}
+
+function getCharacterPersonas(character: Character) {
+	return personas.filter((p) => character.personas?.includes(p.name))
+}
+
+// Validation functions for attribute distributions
+function isValidAttributeDistribution(
+	values: number[],
+	requiredDistribution: number[],
+) {
+	return isEqual(values.sort(subtract), requiredDistribution.sort(subtract))
 }
 
 export function CharacterEditor({
@@ -46,18 +51,49 @@ export function CharacterEditor({
 		characterId: string,
 	) => void
 }) {
-	const stats = getComputedCharacter(character)
 	const characterLineages = getCharacterLineages(character)
+	const characterPersonas = getCharacterPersonas(character)
+	const attributeScores = character.attributeScores || {}
 
-	const level = characterLevels[character.level - 1]
+	// Required distributions
+	const coreAttributeDistribution = [1, 2, 2, 3, 5]
+	const aspectAttributeDistribution = [0, 0, 1, 2, 4]
 
-	const currentAttributeBonuses =
-		character.strengthBonus +
-		character.senseBonus +
-		character.dexterityBonus +
-		character.presenceBonus
+	// Unique options for dropdowns
+	const coreAttributeOptions = Array.from(
+		new Set(coreAttributeDistribution),
+	).sort(subtract)
+	const aspectAttributeOptions = Array.from(
+		new Set(aspectAttributeDistribution),
+	).sort(subtract)
 
-	const availableAttributeBonuses = 3 + (level?.attributePoints ?? 0)
+	// Get current values
+	const coreAttributeValues = Object.keys(attributes).map(
+		(key) => attributeScores[key] ?? 1,
+	)
+	const aspectAttributeValues = Object.keys(aspects).map(
+		(key) => attributeScores[key] ?? 0,
+	)
+
+	// Validate distributions
+	const isCoreAttributesValid = isValidAttributeDistribution(
+		coreAttributeValues,
+		coreAttributeDistribution,
+	)
+	const isAspectAttributesValid = isValidAttributeDistribution(
+		aspectAttributeValues,
+		aspectAttributeDistribution,
+	)
+
+	const updateAttributeScore = (attribute: string, value: number) => {
+		const updatedScores = { ...attributeScores }
+		if (value !== 0) {
+			updatedScores[attribute] = value
+		} else {
+			delete updatedScores[attribute]
+		}
+		onUpdate({ attributeScores: updatedScores })
+	}
 
 	return (
 		<main className="grid gap-6 p-3">
@@ -105,38 +141,77 @@ export function CharacterEditor({
 					</div>
 				</div>
 
-				<div className="grid content-start gap-3">
-					<h2 className="heading-xl text-center">
-						Attributes ({currentAttributeBonuses}/{availableAttributeBonuses})
-					</h2>
-					<StatField
-						label="Strength"
-						className="min-w-0 flex-1"
-						value={character.strengthBonus}
-						addition={stats.strength - character.strengthBonus}
-						onSubmitValue={(value) => onUpdate({ strengthBonus: value })}
-					/>
-					<StatField
-						label="Sense"
-						className="min-w-0 flex-1"
-						value={character.senseBonus}
-						addition={stats.sense - character.senseBonus}
-						onSubmitValue={(value) => onUpdate({ senseBonus: value })}
-					/>
-					<StatField
-						label="Dexterity"
-						className="min-w-0 flex-1"
-						value={character.dexterityBonus}
-						addition={stats.dexterity - character.dexterityBonus}
-						onSubmitValue={(value) => onUpdate({ dexterityBonus: value })}
-					/>
-					<StatField
-						label="Presence"
-						className="min-w-0 flex-1"
-						value={character.presenceBonus}
-						addition={stats.presence - character.presenceBonus}
-						onSubmitValue={(value) => onUpdate({ presenceBonus: value })}
-					/>
+				<div className="grid grid-cols-2 gap-6">
+					<div className="grid content-start gap-3">
+						<h2
+							className={`heading-xl text-left ${isCoreAttributesValid ? "" : "text-red-300"}`}
+						>
+							Core Attributes
+						</h2>
+						{Object.entries(attributes).map(([key, attribute]) => (
+							<AttributeDropdown
+								key={key}
+								label={attribute.name}
+								value={attributeScores[key] ?? 1}
+								onSubmitValue={(value) => updateAttributeScore(key, value)}
+								options={coreAttributeOptions}
+							/>
+						))}
+						{!isCoreAttributesValid && (
+							<p className="mt-2 text-sm font-medium text-red-300">
+								Assign exactly one of each: 1, 2, 2, 3, 5 to core attributes
+							</p>
+						)}
+					</div>
+
+					<div className="grid content-start gap-3">
+						<h2
+							className={`heading-xl text-left ${isAspectAttributesValid ? "" : "text-red-300"}`}
+						>
+							Aspect Attributes
+						</h2>
+						{Object.entries(aspects).map(([key, aspect]) => (
+							<AttributeDropdown
+								key={key}
+								label={aspect.name}
+								value={attributeScores[key] ?? 0}
+								onSubmitValue={(value) => updateAttributeScore(key, value)}
+								options={aspectAttributeOptions}
+							/>
+						))}
+						{!isAspectAttributesValid && (
+							<p className="mt-2 text-sm font-medium text-red-300">
+								Assign exactly: 0, 0, 1, 2, 4 to aspect attributes
+								<button
+									type="button"
+									className="ml-2 text-xs underline"
+									onClick={() => {
+										console.group("Aspect Attributes Debug")
+										console.log(
+											"Current Values:",
+											Object.fromEntries(
+												Object.keys(aspects).map((key) => [
+													key,
+													attributeScores[key] ?? 0,
+												]),
+											),
+										)
+										console.log(
+											"Expected Distribution:",
+											aspectAttributeDistribution,
+										)
+										console.log(
+											"Actual Distribution:",
+											aspectAttributeValues.sort(),
+										)
+										console.groupEnd()
+									}}
+								>
+									Debug
+								</button>
+							</p>
+						)}
+					</div>
 				</div>
 			</div>
 
@@ -158,105 +233,6 @@ export function CharacterEditor({
 				/>
 			</ToggleSection>
 
-			<ToggleSection
-				title={`Experiences (${(character.experiences ?? []).length}/3)`}
-			>
-				<p className="mb-4 text-sm font-medium text-pretty text-gray-300">
-					Define three experiences from your character's past. Each experience
-					gives you one attribute bonus.
-				</p>
-
-				<div className="grid gap-6">
-					<ExperienceForm
-						onSubmit={(experience) =>
-							onUpdate({
-								experiences: (character.experiences ?? []).concat(experience),
-							})
-						}
-					/>
-					<ExperienceList
-						experiences={character.experiences ?? []}
-						onChange={(experiences) => onUpdate({ experiences })}
-					/>
-				</div>
-			</ToggleSection>
-
-			<ToggleSection title="Role">
-				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Choose your role in this society. Hover over each one for examples.
-				</p>
-				<div className="grid grid-cols-2 gap-3">
-					{Object.entries(roles).map(([roleId, role]) => (
-						<OptionCard
-							type="radio"
-							key={roleId}
-							label={role.name}
-							description={`+2 ${role.attribute.name}`}
-							checked={character.role === roleId}
-							onChange={() => onUpdate({ role: roleId })}
-							// show name on title in case it gets truncated
-							title={`${role.name} - ${role.examples}`}
-						/>
-					))}
-				</div>
-			</ToggleSection>
-
-			<ToggleSection title="Drive">
-				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
-					Choose your character's drive, the primary motivation that pushes them
-					to action. Your chosen drive determines your aspect skills.
-				</p>
-
-				{character.role && (
-					<>
-						<h3 className="text-md mb-1 font-semibold text-gray-200">
-							Suggested for the role "
-							{character.role &&
-								roles[character.role as keyof typeof roles]?.name}
-							"
-						</h3>
-						<div className="mb-4 grid grid-cols-2 gap-3">
-							{Object.entries(roles)
-								.find(([id]) => id === character.role)?.[1]
-								?.drives.map((drive) => (
-									<OptionCard
-										type="radio"
-										key={drive.name}
-										label={drive.name}
-										description={drive.description}
-										checked={character.drive === drive.name}
-										onChange={() => onUpdate({ drive: drive.name })}
-									/>
-								))}
-						</div>
-					</>
-				)}
-
-				<h3 className="text-md mb-1 font-semibold text-gray-200">
-					Other drives
-				</h3>
-				<div className="grid grid-cols-2 gap-3">
-					{Object.values(drives)
-						.filter(
-							(drive) =>
-								!character.role ||
-								!Object.entries(roles)
-									.find(([id]) => id === character.role)?.[1]
-									?.drives.includes(drive),
-						)
-						.map((drive) => (
-							<OptionCard
-								type="checkbox"
-								key={drive.name}
-								label={drive.name}
-								description={drive.description}
-								checked={character.drive === drive.name}
-								onChange={() => onUpdate({ drive: drive.name })}
-							/>
-						))}
-				</div>
-			</ToggleSection>
-
 			<ToggleSection title="Lineage">
 				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
 					Your lineage(s) determine your physical appearance and traits. Hover
@@ -275,25 +251,81 @@ export function CharacterEditor({
 							type="checkbox"
 							key={lineage.name}
 							label={lineage.name}
-							description={lineage.aspects
-								.map((it) => `+2 ${it.name}`)
-								.join(", ")}
+							description={lineage.ability}
 							title={lineage.example}
 							checked={character.lineages?.includes(lineage.name)}
 							onChange={() => {
-								const lineages = new Set(character.lineages)
-								if (lineages.has(lineage.name)) {
-									lineages.delete(lineage.name)
-								} else {
-									lineages.add(lineage.name)
-								}
-								onUpdate({ lineages: [...lineages] })
+								onUpdate({
+									lineages: toggleInArray(character.lineages, lineage.name),
+								})
+							}}
+						/>
+					))}
+				</div>
+			</ToggleSection>
+
+			<ToggleSection title="Persona">
+				<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
+					Your persona(s) determine your character's role and alignment. Hover
+					over each one for examples.
+				</p>
+
+				{(characterPersonas.length === 0 || characterPersonas.length > 2) && (
+					<p className="mb-2 text-sm font-medium text-pretty text-gray-300">
+						Choose one or two personas.
+					</p>
+				)}
+
+				<div className="grid grid-cols-2 gap-3">
+					{personas.map((persona) => (
+						<OptionCard
+							type="checkbox"
+							key={persona.name}
+							label={persona.name}
+							description={persona.ability}
+							title={persona.description}
+							checked={character.personas?.includes(persona.name)}
+							onChange={() => {
+								onUpdate({
+									personas: toggleInArray(character.personas, persona.name),
+								})
 							}}
 						/>
 					))}
 				</div>
 			</ToggleSection>
 		</main>
+	)
+}
+
+function AttributeDropdown({
+	label,
+	className,
+	value,
+	onSubmitValue,
+	options,
+}: {
+	label: string
+	className?: string
+	value: number
+	onSubmitValue: (value: number) => void
+	options: number[]
+}) {
+	return (
+		<div className={`flex items-center gap-3 ${className}`}>
+			<label className="w-24 text-sm font-medium">{label}</label>
+			<select
+				value={value}
+				onChange={(event) => onSubmitValue(Number(event.target.value))}
+				className="h-10 w-20 min-w-0 rounded border border-gray-800 bg-gray-900 px-3 text-center transition focus:border-gray-700 focus:outline-none"
+			>
+				{options.map((option) => (
+					<option key={option} value={option}>
+						{option}
+					</option>
+				))}
+			</select>
+		</div>
 	)
 }
 
@@ -327,92 +359,6 @@ function PlayerSelect({
 				))}
 			</select>
 		</div>
-	)
-}
-
-function ExperienceList({
-	experiences,
-	onChange,
-}: {
-	experiences: CharacterExperience[]
-	onChange: (experiences: CharacterExperience[]) => void
-}) {
-	return (
-		<ul className="grid gap-2">
-			{experiences.map((experience, index) => (
-				<li
-					key={index}
-					className="group flex items-start gap-3 rounded bg-gray-900 p-2"
-				>
-					<div className="flex-1">
-						<h3 className="mb-1 font-medium">{experience.description}</h3>
-						<p className="text-sm text-gray-400">
-							+1{" "}
-							{experience.attributeId &&
-								startCase(
-									attributes[experience.attributeId as keyof typeof attributes]
-										?.name,
-								)}
-						</p>
-					</div>
-					<Tooltip content="Remove this experience">
-						<SolidButton
-							className="border-transparent bg-transparent opacity-75 hover:opacity-100"
-							onClick={() => onChange(withoutIndex(experiences, index))}
-						>
-							<Icon icon="mingcute:close-fill" />
-						</SolidButton>
-					</Tooltip>
-				</li>
-			))}
-		</ul>
-	)
-}
-
-function ExperienceForm({
-	onSubmit,
-}: {
-	onSubmit: (experience: CharacterExperience) => void
-}) {
-	const [description, setDescription] = useState("")
-	const [attributeId, setAttributeId] = useState(Object.keys(attributes)[0]!)
-	return (
-		<form
-			action={() => {
-				onSubmit({ description, attributeId })
-				setDescription("")
-			}}
-		>
-			<div className="flex items-end gap-2">
-				<InputField
-					className="flex-1"
-					label="Description"
-					placeholder="got lost in the wilderness"
-					required
-					value={description}
-					onChange={(event) => setDescription(event.target.value)}
-				/>
-
-				<SelectField
-					className="w-32"
-					label="Attribute bonus"
-					value={attributeId}
-					onChange={(event) => setAttributeId(event.target.value)}
-				>
-					{Object.entries(attributes).map(([id, item]) => (
-						<option key={id} value={id}>
-							{item.name}
-						</option>
-					))}
-				</SelectField>
-
-				<Tooltip content="Add experience">
-					<SolidButton type="submit">
-						<Icon icon="mingcute:add-fill" />
-					</SolidButton>
-				</Tooltip>
-			</div>
-		</form>
 	)
 }
 
