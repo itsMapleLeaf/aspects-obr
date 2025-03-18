@@ -16,7 +16,6 @@ import path from "path"
 export const notionSecret = process.env.NOTION_SECRET
 export const pageId = "1b1b0b885c0e803d8566fb10e0b5130c"
 
-// Initialize the Notion client
 if (!notionSecret) {
 	console.error("Error: NOTION_SECRET environment variable is not set")
 	process.exit(1)
@@ -25,12 +24,10 @@ if (!notionSecret) {
 const notion = new Client({ auth: notionSecret })
 const dataDir = path.resolve(process.cwd(), "data")
 
-// Ensure data directory exists
 if (!fs.existsSync(dataDir)) {
 	fs.mkdirSync(dataDir, { recursive: true })
 }
 
-/** Fetch a page from Notion by ID */
 async function fetchPage(id: string) {
 	try {
 		console.log(`Fetching page: ${id}`)
@@ -42,7 +39,6 @@ async function fetchPage(id: string) {
 	}
 }
 
-/** Fetch page content (blocks) from Notion */
 async function fetchPageContent(
 	id: string,
 	startCursor?: string,
@@ -63,7 +59,6 @@ async function fetchPageContent(
 
 		let blocks = response.results.filter(isFullBlock)
 
-		// Fetch child blocks for each block that has children
 		for (const block of blocks) {
 			if (block.has_children) {
 				const { blocks: childBlocks, childrenMap: updatedMap } =
@@ -73,7 +68,6 @@ async function fetchPageContent(
 			}
 		}
 
-		// If there are more results, fetch them recursively
 		if (response.has_more && response.next_cursor) {
 			const { blocks: moreBlocks, childrenMap: updatedMap } =
 				await fetchPageContent(id, response.next_cursor, blockChildrenMap)
@@ -88,7 +82,6 @@ async function fetchPageContent(
 	}
 }
 
-/** Fetch a database from Notion by ID */
 async function fetchDatabase(id: string): Promise<DatabaseObjectResponse> {
 	try {
 		console.log(`Fetching database: ${id}`)
@@ -101,7 +94,6 @@ async function fetchDatabase(id: string): Promise<DatabaseObjectResponse> {
 	}
 }
 
-/** Query all items from a database */
 async function queryDatabase(
 	id: string,
 	startCursor?: string,
@@ -118,7 +110,6 @@ async function queryDatabase(
 
 		let results = response.results
 
-		// If there are more results, fetch them recursively
 		if (response.has_more && response.next_cursor) {
 			const moreResults = await queryDatabase(id, response.next_cursor)
 			results = [...results, ...moreResults]
@@ -131,7 +122,6 @@ async function queryDatabase(
 	}
 }
 
-/** Process blocks to find database references */
 function findDatabaseIds(
 	blocks: BlockObjectResponse[],
 	childrenMap: Map<string, BlockObjectResponse[]>,
@@ -139,12 +129,10 @@ function findDatabaseIds(
 	const databaseIds: string[] = []
 
 	for (const block of blocks) {
-		// Check if block is a child_database
 		if (block.type === "child_database" && block.id) {
 			databaseIds.push(block.id)
 		}
 
-		// Recursively check child blocks if they exist
 		if (block.has_children) {
 			const childBlocks = childrenMap.get(block.id) || []
 			if (childBlocks.length > 0) {
@@ -157,14 +145,12 @@ function findDatabaseIds(
 	return databaseIds
 }
 
-/** Clean and format database items for easier use in the app */
 function processDatabaseItems(
 	items: (PageObjectResponse | DatabaseObjectResponse)[],
 ) {
 	return items.map((item) => {
 		const processedItem: Record<string, unknown> = { id: item.id }
 
-		// Process each property based on its type
 		for (const key in item.properties) {
 			const prop = item.properties[key]
 			const type = prop.type
@@ -198,7 +184,6 @@ function processDatabaseItems(
 	})
 }
 
-/** Convert Notion blocks to Markdown */
 function blocksToMarkdown(
 	blocks: BlockObjectResponse[],
 	childrenMap: Map<string, BlockObjectResponse[]>,
@@ -251,11 +236,9 @@ function blocksToMarkdown(
 			markdown += `${indentStr}> **${emoji} NOTE**\n>\n`
 			markdown += `${indentStr}> ${text}\n\n`
 
-			// Add callout children if any
 			if (block.has_children) {
 				const childBlocks = childrenMap.get(block.id) || []
 				if (childBlocks.length > 0) {
-					// Convert child content and add to callout with > prefix on each line
 					const childContent = blocksToMarkdown(
 						childBlocks,
 						childrenMap,
@@ -271,7 +254,6 @@ function blocksToMarkdown(
 			const text = block.toggle.rich_text.map((t) => t.plain_text).join("")
 			markdown += `${indentStr}<details>\n${indentStr}<summary>${text}</summary>\n\n`
 
-			// Add nested content if available
 			if (block.has_children) {
 				const childBlocks = childrenMap.get(block.id) || []
 				if (childBlocks.length > 0) {
@@ -281,7 +263,6 @@ function blocksToMarkdown(
 
 			markdown += `${indentStr}</details>\n\n`
 		} else if (block.type === "synced_block") {
-			// For synced blocks, just render their content directly
 			if (block.has_children) {
 				const childBlocks = childrenMap.get(block.id) || []
 				if (childBlocks.length > 0) {
@@ -294,7 +275,7 @@ function blocksToMarkdown(
 			markdown += `${indentStr}*Page: ${block.id}*\n\n`
 		} else if (block.type === "table") {
 			markdown += `${indentStr}<table>\n`
-			// Table content will be in children
+
 			if (block.has_children) {
 				const childBlocks = childrenMap.get(block.id) || []
 				if (childBlocks.length > 0) {
@@ -328,7 +309,6 @@ function blocksToMarkdown(
 			}
 			markdown += `${indentStr}</div>\n`
 		} else {
-			// For unsupported block types, add a placeholder with the type
 			markdown += `${indentStr}*${block.type}*\n\n`
 		}
 	}
@@ -336,49 +316,40 @@ function blocksToMarkdown(
 	return markdown
 }
 
-/** Save data to a JSON file */
 function saveToJson(filename: string, data: unknown): void {
 	const filePath = path.join(dataDir, `${filename}.json`)
 	fs.writeFileSync(filePath, JSON.stringify(data, null, 2))
 	console.log(`Saved data to ${filePath}`)
 }
 
-/** Save content to a Markdown file */
 function saveToMarkdown(filename: string, content: string): void {
 	const filePath = path.join(dataDir, `${filename}.md`)
 	fs.writeFileSync(filePath, content)
 	console.log(`Saved data to ${filePath}`)
 }
 
-/** Save data to a CSV file */
 function saveToCsv(filename: string, items: Record<string, unknown>[]): void {
 	if (items.length === 0) {
 		console.log(`No items to save to CSV for ${filename}`)
 		return
 	}
 
-	// Get all unique headers from all items
 	const headers = Array.from(
 		new Set(items.flatMap((item) => Object.keys(item))),
 	)
 
-	// Create CSV content
 	let csvContent = headers.join(",") + "\n"
 
-	// Add rows
 	for (const item of items) {
 		const row = headers.map((header) => {
 			const value = item[header]
 
-			// Handle different value types
 			if (value === undefined || value === null) {
 				return ""
 			} else if (typeof value === "string") {
-				// Escape quotes and wrap in quotes if needed
 				const escaped = value.replace(/"/g, '""')
 				return /[,"\n\r]/.test(escaped) ? `"${escaped}"` : escaped
 			} else if (Array.isArray(value)) {
-				// Join arrays with semicolons and wrap in quotes
 				const joined = value.join(";")
 				return `"${joined}"`
 			} else {
@@ -394,22 +365,17 @@ function saveToCsv(filename: string, items: Record<string, unknown>[]): void {
 	console.log(`Saved data to ${filePath}`)
 }
 
-/** Main function to run the script */
 async function main() {
 	try {
-		// Fetch the guide page
 		const guidePage = await fetchPage(pageId)
 		saveToJson("guide-page", guidePage)
 
-		// Fetch the page content
 		const { blocks: pageBlocks, childrenMap: blockChildrenMap } =
 			await fetchPageContent(pageId)
 		saveToJson("guide-content", pageBlocks)
 
-		// Convert blocks to markdown and save
 		let pageTitle = "Aspects of Nature Guidebook"
 
-		// Access title if it exists on the page object
 		if (
 			isFullPageOrDatabase(guidePage) &&
 			"properties" in guidePage &&
@@ -419,54 +385,43 @@ async function main() {
 			if (titleText) pageTitle = titleText
 		}
 
-		// Generate markdown content with original title
 		const pageMarkdown = `# ${pageTitle}\n\n${blocksToMarkdown(pageBlocks, blockChildrenMap)}`
 
-		// Sanitize title for filename - replace colons and other invalid characters
 		const sanitizedTitle = pageTitle
 			.replace(/:/g, "-")
-			.replace(/[<>:"/\\|?*]/g, "-") // Replace Windows invalid filename chars
+			.replace(/[<>:"/\\|?*]/g, "-")
 			.replace(/\s+/g, " ")
 			.trim()
 
 		saveToMarkdown(`${sanitizedTitle} ${pageId}`, pageMarkdown)
 
-		// Find all database IDs in the page content
 		const databaseIds = findDatabaseIds(pageBlocks, blockChildrenMap)
 		console.log(`Found ${databaseIds.length} databases in the guide page`)
 
-		// Fetch each database and its items
 		for (const dbId of databaseIds) {
-			// Fetch database structure
 			const database = await fetchDatabase(dbId)
 			const databaseName =
 				database.title.map((item) => item.plain_text).join("") ||
 				`database-${dbId}`
 
-			// Sanitize name for filename (json files use lowercase kebab-case)
 			const sanitizedName = databaseName
 				.toLowerCase()
 				.replace(/\s+/g, "-")
 				.replace(/[^a-z0-9-]/g, "")
 
-			// Save database structure
 			saveToJson(`${sanitizedName}-structure`, database)
 
-			// Query all items in the database
 			const items = await queryDatabase(dbId)
 
-			// Process and save items
 			const processedItems = processDatabaseItems(items)
 			saveToJson(sanitizedName, processedItems)
 
-			// Sanitize database name for CSV (preserve original case but replace invalid chars)
 			const sanitizedCsvName = databaseName
 				.replace(/:/g, "-")
-				.replace(/[<>:"/\\|?*]/g, "-") // Replace Windows invalid filename chars
+				.replace(/[<>:"/\\|?*]/g, "-")
 				.replace(/\s+/g, " ")
 				.trim()
 
-			// Save items as CSV
 			saveToCsv(`${sanitizedCsvName} ${dbId}`, processedItems)
 		}
 
@@ -477,7 +432,6 @@ async function main() {
 	}
 }
 
-// Run the script if executed directly
 if (require.main === module) {
 	main()
 }
