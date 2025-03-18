@@ -13,7 +13,7 @@ import type {
 import { invariant, memoize, sortBy } from "es-toolkit"
 import { existsSync } from "node:fs"
 import { mkdir, writeFile } from "node:fs/promises"
-import path, { resolve } from "node:path"
+import { dirname, resolve } from "node:path"
 import { argv } from "node:process"
 import { inspect } from "node:util"
 import * as prettier from "prettier"
@@ -22,6 +22,7 @@ import * as yaml from "yaml"
 const NOTION_SECRET = process.env.NOTION_SECRET
 const PAGE_ID = "1b1b0b885c0e803d8566fb10e0b5130c"
 const FORMAT = argv.includes("--no-format") ? false : true
+const OUTPUT_PATH = resolve("public/guide.md")
 
 if (!NOTION_SECRET) {
 	console.error("Error: NOTION_SECRET environment variable is not set")
@@ -31,21 +32,20 @@ if (!NOTION_SECRET) {
 const notion = new Client({ auth: NOTION_SECRET })
 
 async function main() {
-	let content = await formatPage(await getFullPage(PAGE_ID))
+	let content = await formatPage(await loadPage(PAGE_ID))
 	if (FORMAT) {
 		console.info("Formatting... (pass --no-format to skip)")
 		content = await prettier.format(content, { parser: "markdown" })
 	}
 
-	const dataFolder = path.resolve(process.cwd(), "data")
-	if (!existsSync(dataFolder)) {
-		await mkdir(dataFolder, { recursive: true })
+	const outputFolder = dirname(OUTPUT_PATH)
+	if (!existsSync(outputFolder)) {
+		await mkdir(outputFolder, { recursive: true })
 	}
-
-	await writeFile(resolve(dataFolder, "guide.md"), content)
+	await writeFile(OUTPUT_PATH, content)
 }
 
-const getFullPage = memoize(async function getFullPage(
+const loadPage = memoize(async function loadPage(
 	pageId: string,
 ): Promise<PageObjectResponse> {
 	const page = await notion.pages.retrieve({ page_id: pageId })
@@ -53,7 +53,7 @@ const getFullPage = memoize(async function getFullPage(
 	return page
 })
 
-function getTitleProperty(page: PageObjectResponse) {
+function getPageTitleProperty(page: PageObjectResponse) {
 	for (const [key, property] of Object.entries(page.properties)) {
 		if (property.type === "title") {
 			return { key, property }
@@ -63,7 +63,7 @@ function getTitleProperty(page: PageObjectResponse) {
 }
 
 function splitPageTitleProperty(page: PageObjectResponse) {
-	const { key, property } = getTitleProperty(page)
+	const { key, property } = getPageTitleProperty(page)
 	const { [key]: _, ...rest } = page.properties
 
 	return {
@@ -223,15 +223,12 @@ async function flattenDatabaseRow(
 	return Object.fromEntries(
 		await Array.fromAsync(
 			Object.entries(item.properties),
-			async ([name, property]) => [
-				name,
-				await flattenDatabaseProperty(property),
-			],
+			async ([name, property]) => [name, await flattenPageProperty(property)],
 		),
 	)
 }
 
-async function flattenDatabaseProperty(
+async function flattenPageProperty(
 	property: PageObjectResponse["properties"][string],
 ): Promise<string> {
 	if (property.type === "title") {
@@ -252,7 +249,7 @@ async function flattenDatabaseProperty(
 
 	if (property.type === "relation") {
 		const relatedPages = await Promise.all(
-			property.relation.map((related) => getFullPage(related.id)),
+			property.relation.map((related) => loadPage(related.id)),
 		)
 
 		return relatedPages

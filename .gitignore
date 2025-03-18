@@ -17,6 +17,7 @@ dist-ssr
 # local files
 *.local
 /data/
+/public/guide.md
 
 # env files
 .env
