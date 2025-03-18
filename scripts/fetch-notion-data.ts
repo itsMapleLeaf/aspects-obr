@@ -198,50 +198,7 @@ async function formatBlock(block: BlockObjectResponse): Promise<string> {
 			database_id: block.id,
 		})) {
 			if (isFullPage(item)) {
-				const row: Record<string, string> = {}
-
-				for (const [name, property] of Object.entries(item.properties)) {
-					if (property.type === "title") {
-						row[name] = formatRichText(property.title)
-						continue
-					}
-
-					if (property.type === "rich_text") {
-						row[name] = formatRichText(property.rich_text)
-						continue
-					}
-
-					if (property.type === "select") {
-						row[name] = property.select?.name ?? ""
-						continue
-					}
-
-					if (property.type === "multi_select") {
-						row[name] = property.multi_select
-							.map((value) => value.name)
-							.join(", ")
-						continue
-					}
-
-					if (property.type === "relation") {
-						const relatedPages = await Promise.all(
-							property.relation.map((related) => getFullPage(related.id)),
-						)
-
-						row[name] = relatedPages
-							.map((page) => {
-								const { title } = splitPageTitleProperty(page)
-								return title
-							})
-							.join(", ")
-
-						continue
-					}
-
-					console.warn(`Unsupported database property:`, name, property)
-				}
-
-				rows.push(row)
+				rows.push(await flattenDatabaseRow(item))
 			} else {
 				console.warn(`Unsupported database item:`, item)
 			}
@@ -258,6 +215,56 @@ async function formatBlock(block: BlockObjectResponse): Promise<string> {
 
 	console.warn(`Unsupported block type ${block.type}, skipping`)
 	return `<!-- unsupported block type: ${block.type} -->`
+}
+
+async function flattenDatabaseRow(
+	item: PageObjectResponse,
+): Promise<Record<string, string>> {
+	return Object.fromEntries(
+		await Array.fromAsync(
+			Object.entries(item.properties),
+			async ([name, property]) => [
+				name,
+				await flattenDatabaseProperty(property),
+			],
+		),
+	)
+}
+
+async function flattenDatabaseProperty(
+	property: PageObjectResponse["properties"][string],
+): Promise<string> {
+	if (property.type === "title") {
+		return formatRichText(property.title)
+	}
+
+	if (property.type === "rich_text") {
+		return formatRichText(property.rich_text)
+	}
+
+	if (property.type === "select") {
+		return property.select?.name ?? ""
+	}
+
+	if (property.type === "multi_select") {
+		return property.multi_select.map((value) => value.name).join(", ")
+	}
+
+	if (property.type === "relation") {
+		const relatedPages = await Promise.all(
+			property.relation.map((related) => getFullPage(related.id)),
+		)
+
+		return relatedPages
+			.map((page) => {
+				const { title } = splitPageTitleProperty(page)
+				return title
+			})
+			.join(", ")
+	}
+
+	console.warn(`Unsupported database property:`, property)
+	return JSON.stringify(property)
 }
 
 function compactJoin(
