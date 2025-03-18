@@ -159,9 +159,10 @@ export function CharacterEditor({
 						))}
 						{!isCoreAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
-								{anyCoreAttributeOutOfRange
-									? `Core attributes must be between ${CORE_ATTRIBUTE_MIN} and ${MAX_ATTRIBUTE_VALUE}.`
-									: `Assign exactly ${CORE_ATTRIBUTE_POINTS} total points to core attributes.`}
+								{anyCoreAttributeOutOfRange ?
+									`Core attributes must be between ${CORE_ATTRIBUTE_MIN} and ${MAX_ATTRIBUTE_VALUE}.`
+								:	`Assign exactly ${CORE_ATTRIBUTE_POINTS} total points to core attributes.`
+								}
 							</p>
 						)}
 					</div>
@@ -187,9 +188,10 @@ export function CharacterEditor({
 						))}
 						{!isAspectAttributesValid && (
 							<p className="mt-2 text-sm font-medium text-red-300">
-								{anyAspectAttributeOutOfRange
-									? `Aspect attributes must be between ${ASPECT_ATTRIBUTE_MIN} and ${MAX_ATTRIBUTE_VALUE}.`
-									: `Assign exactly ${ASPECT_ATTRIBUTE_POINTS} total points to aspect attributes.`}
+								{anyAspectAttributeOutOfRange ?
+									`Aspect attributes must be between ${ASPECT_ATTRIBUTE_MIN} and ${MAX_ATTRIBUTE_VALUE}.`
+								:	`Assign exactly ${ASPECT_ATTRIBUTE_POINTS} total points to aspect attributes.`
+								}
 							</p>
 						)}
 					</div>
@@ -440,13 +442,13 @@ function CharacterImage({
 }) {
 	const player = usePlayer()
 	if (player?.role !== "GM") {
-		return url ? (
-			<img
-				src={url}
-				alt=""
-				className="aspect-[3/4] w-32 rounded border border-gray-800 object-cover object-top"
-			/>
-		) : null
+		return url ?
+				<img
+					src={url}
+					alt=""
+					className="aspect-[3/4] w-32 rounded border border-gray-800 object-cover object-top"
+				/>
+			:	null
 	}
 
 	return (

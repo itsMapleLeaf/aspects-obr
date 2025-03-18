@@ -96,16 +96,15 @@ export function CopyMarkdownButton({ character }: { character: Character }) {
 			title="Copy character sheet as markdown"
 			disabled={copied}
 		>
-			{copied ? (
+			{copied ?
 				<>
 					<Icon icon="mingcute:check-fill" className="size-4" /> Copied!
 				</>
-			) : (
-				<>
+			:	<>
 					<Icon icon="mingcute:copy-2-line" className="size-4" /> Copy as
 					Markdown
 				</>
-			)}
+			}
 		</SolidButton>
 	)
 }

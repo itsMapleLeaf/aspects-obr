@@ -53,26 +53,26 @@ export function OptionCard({
 			</header>
 
 			<p className="text-[15px]">
-				{Array.isArray(description)
-					? description.map((line, index) => (
-							<span key={index} className="block">
-								{line}
-								{index < description.length - 1 && <br />}
-							</span>
-						))
-					: description}
+				{Array.isArray(description) ?
+					description.map((line, index) => (
+						<span key={index} className="block">
+							{line}
+							{index < description.length - 1 && <br />}
+						</span>
+					))
+				:	description}
 			</p>
 
 			{aside && (
 				<p className="text-sm text-gray-300 italic">
-					{Array.isArray(aside)
-						? aside.map((line, index) => (
-								<span key={index} className="block">
-									{line}
-									{index < aside.length - 1 && <br />}
-								</span>
-							))
-						: aside}
+					{Array.isArray(aside) ?
+						aside.map((line, index) => (
+							<span key={index} className="block">
+								{line}
+								{index < aside.length - 1 && <br />}
+							</span>
+						))
+					:	aside}
 				</p>
 			)}
 		</label>

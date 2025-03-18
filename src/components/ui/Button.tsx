@@ -54,11 +54,9 @@ export function Button({
 	const content = (
 		<>
 			<div className={`${sizeClasses[size].icon} empty:hidden`}>
-				{pending ? (
+				{pending ?
 					<Icon icon="mingcute:loading-3-fill" className="animate-spin" />
-				) : (
-					icon
-				)}
+				:	icon}
 			</div>
 			{children}
 		</>

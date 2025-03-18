@@ -193,10 +193,9 @@ export function DicePanel({
 					<h3 id="history-heading" className="heading-xl mb-1">
 						History
 					</h3>
-					{diceRolls.length === 0 ? (
+					{diceRolls.length === 0 ?
 						<p className="text-gray-400">No dice rolls yet</p>
-					) : (
-						<ul className="grid min-h-0 flex-1 gap-2 overflow-y-auto">
+					:	<ul className="grid min-h-0 flex-1 gap-2 overflow-y-auto">
 							{diceRolls.map((roll) => {
 								const successes = countTotalSuccesses(roll.results)
 								const isSuccess = successes > 0
@@ -226,7 +225,7 @@ export function DicePanel({
 										</ul>
 
 										<p className="text-sm font-semibold tracking-wide text-gray-400">
-											{roll.characterName ? (
+											{roll.characterName ?
 												<>
 													Rolled by{" "}
 													<strong className="font-bold">
@@ -234,21 +233,19 @@ export function DicePanel({
 													</strong>{" "}
 													•{" "}
 												</>
-											) : null}
-											{isSuccess ? (
+											:	null}
+											{isSuccess ?
 												<strong className="text-green-300">
 													{successes}{" "}
 													{successes === 1 ? "success" : "successes"}
 												</strong>
-											) : (
-												<strong>failed</strong>
-											)}
+											:	<strong>failed</strong>}
 										</p>
 									</li>
 								)
 							})}
 						</ul>
-					)}
+					}
 				</section>
 			</DialogPanel>
 		</Dialog>

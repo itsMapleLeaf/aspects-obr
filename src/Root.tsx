@@ -35,7 +35,7 @@ const RoomMetadata = type({
 export function Root() {
 	return (
 		<ReadyGuard>
-			<ExtensionClientView />
+			<App />
 		</ReadyGuard>
 	)
 }
@@ -49,16 +49,14 @@ function ReadyGuard({ children }: { children: ReactNode }) {
 		})
 	}, [])
 
-	return ready ? (
-		children
-	) : (
-		<ContentState.Loading>
-			If this shows for more than 5 seconds, try refreshing the page.
-		</ContentState.Loading>
-	)
+	return ready ? children : (
+			<ContentState.Loading>
+				If this shows for more than 5 seconds, try refreshing the page.
+			</ContentState.Loading>
+		)
 }
 
-function ExtensionClientView() {
+function App() {
 	const [characters, setCharacters] = useState(new Map<string, Character>())
 	const [diceRolls, setDiceRolls] = useState<DiceRoll[]>([])
 	const [isDicePanelOpen, setIsDicePanelOpen] = useState(false)
@@ -198,9 +196,10 @@ function ExtensionClientView() {
 		}
 
 		await saveMetadata({
-			characters: character
-				? new Map(characters).set(character.id, character)
-				: undefined,
+			characters:
+				character ?
+					new Map(characters).set(character.id, character)
+				:	undefined,
 			rolls: [
 				{
 					id: crypto.randomUUID(),
@@ -216,9 +215,10 @@ function ExtensionClientView() {
 
 		const successes = countTotalSuccesses(results)
 
-		const successText = isSuccess
-			? `${successes} ${successes === 1 ? "success" : "successes"}`
-			: "failed"
+		const successText =
+			isSuccess ?
+				`${successes} ${successes === 1 ? "success" : "successes"}`
+			:	"failed"
 
 		const characterText = character ? `${character.name} rolled ` : ""
 

@@ -9,6 +9,7 @@
 		"lint": "eslint .",
 		"preview": "vite preview",
 		"test": "vitest --run",
+		"format": "prettier . --write",
 		"fetch-notion-data": "bun run scripts/fetch-notion-data.ts"
 	},
 	"dependencies": {
