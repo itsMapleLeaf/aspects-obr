@@ -190,7 +190,7 @@ function processDatabaseItems(
 			} else if (type === "url") {
 				processedItem[key] = prop.url
 			} else {
-				processedItem[key] = prop
+				processedItem[key] = JSON.stringify(prop)
 			}
 		}
 
