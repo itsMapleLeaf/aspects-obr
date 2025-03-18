@@ -1,6 +1,7 @@
 {
-  "semi": false,
-  "useTabs": true,
-  "quoteProps": "consistent",
-  "plugins": ["prettier-plugin-jsdoc", "prettier-plugin-tailwindcss"]
+	"semi": false,
+	"useTabs": true,
+	"quoteProps": "consistent",
+	"experimentalTernaries": true,
+	"plugins": ["prettier-plugin-jsdoc", "prettier-plugin-tailwindcss"]
 }
