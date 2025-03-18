@@ -4,7 +4,7 @@ import { twMerge } from "tailwind-merge"
 import { Tooltip } from "~/components/ui/Tooltip"
 import type { Character } from "../character.ts"
 import { actions, aspects, aspectSkills, attributes } from "../data.ts"
-import { truthyJoin } from "../lib/utils.ts"
+import { compactJoin } from "../lib/utils.ts"
 import { SmallSolidButton } from "./ui/SmallSolidButton"
 
 interface ActionsListProps {
@@ -150,7 +150,7 @@ export function ActionsList({
 										false
 									const isNarrationOnly = hasNoMechanicalEffect(action)
 
-									const tooltipContent = truthyJoin(" ", [
+									const tooltipContent = compactJoin(" ", [
 										action.effect,
 										!isNarrationOnly && "(Uses 1 fatigue)",
 									])

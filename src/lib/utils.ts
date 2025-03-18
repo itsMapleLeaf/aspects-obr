@@ -31,7 +31,7 @@ export function toggleInArray<T>(array: T[], item: T): T[] {
  * @param values Array of values (can contain falsy values)
  * @returns A string of joined truthy values
  */
-export function truthyJoin(
+export function compactJoin(
 	separator: string,
 	values: (string | Falsy)[],
 ): string {
