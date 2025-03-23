@@ -7,7 +7,7 @@ import {
 } from "@notionhq/client"
 import { BlockObjectResponse } from "@notionhq/client/build/src/api-endpoints"
 import { invariant, sortBy } from "es-toolkit"
-import { flattenDatabaseRow } from "./notion-database.ts"
+import { flattenPageProperties } from "./notion-page.ts"
 import { formatRichText } from "./notion-rich-text.ts"
 import { compactJoin, prettify } from "./utils.ts"
 
@@ -135,7 +135,7 @@ export async function formatBlock(
 				database_id: block.id,
 			})) {
 				if (isFullPage(item)) {
-					rows.push(await flattenDatabaseRow(notion, item))
+					rows.push(await flattenPageProperties(notion, item))
 				} else {
 					console.warn(`Unsupported database item:`, item)
 				}

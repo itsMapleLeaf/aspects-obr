@@ -1,19 +1,25 @@
 import { isFullPage, type Client } from "@notionhq/client"
 import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
-import { invariant, memoize } from "es-toolkit"
+import { invariant } from "es-toolkit"
 import * as yaml from "yaml"
 import { formatBlockChildren } from "./notion-block.ts"
 import { formatRichText } from "./notion-rich-text.ts"
 import { compactJoin, prettify } from "./utils.ts"
 
-export const loadPage = memoize(async function loadPage(
+const pageCache = new Map<string, PageObjectResponse>()
+
+export async function loadPage(
 	notion: Client,
 	pageId: string,
 ): Promise<PageObjectResponse> {
+	const existing = pageCache.get(pageId)
+	if (existing) return existing
+
 	const page = await notion.pages.retrieve({ page_id: pageId })
 	invariant(isFullPage(page), `expected full page, received: ${prettify(page)}`)
+	pageCache.set(pageId, page)
 	return page
-})
+}
 
 function getPageTitleProperty(page: PageObjectResponse) {
 	for (const [key, property] of Object.entries(page.properties)) {
@@ -67,18 +73,40 @@ export async function flattenPageProperty(
 	}
 
 	if (property.type === "relation") {
-		const relatedPages = await Promise.all(
-			property.relation.map((related) => loadPage(notion, related.id)),
-		)
-
-		return relatedPages
-			.map((page) => {
-				const { title } = splitPageTitleProperty(page)
-				return title
-			})
-			.join(", ")
+		return await getRelationTitle(notion, property)
 	}
 
 	console.warn(`Unsupported database property:`, property)
 	return JSON.stringify(property)
+}
+
+async function getRelationTitle(
+	notion: Client,
+	property: { relation: Array<{ id: string }> },
+) {
+	const relatedPages = await Promise.all(
+		property.relation.map((related) => loadPage(notion, related.id)),
+	)
+
+	return relatedPages
+		.map((page) => {
+			const { title } = splitPageTitleProperty(page)
+			return title
+		})
+		.join(", ")
+}
+
+export async function flattenPageProperties(
+	notion: Client,
+	item: PageObjectResponse,
+): Promise<Record<string, string>> {
+	return Object.fromEntries(
+		await Array.fromAsync(
+			Object.entries(item.properties),
+			async ([name, property]) => [
+				name,
+				await flattenPageProperty(notion, property),
+			],
+		),
+	)
 }
