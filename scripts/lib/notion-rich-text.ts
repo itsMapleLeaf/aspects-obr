@@ -1,11 +1,26 @@
 import { RichTextItemResponse } from "@notionhq/client/build/src/api-endpoints"
 
-export function formatRichText(items: RichTextItemResponse[]) {
-	return items.map(formatRichTextItem).join("")
+export function formatRichText(
+	items: RichTextItemResponse[],
+	options?: FormatRichTextItemOptions,
+) {
+	return items.map((item) => formatRichTextItem(item, options)).join("")
 }
 
-export function formatRichTextItem(item: RichTextItemResponse) {
+export type FormatRichTextItemOptions = {
+	asPlainText?: boolean
+}
+
+export function formatRichTextItem(
+	item: RichTextItemResponse,
+	options?: FormatRichTextItemOptions,
+) {
 	let text = item.plain_text
+
+	if (options?.asPlainText) {
+		return text
+	}
+
 	if (item.annotations.code) {
 		text = `\`${text}\``
 	}
@@ -26,5 +41,6 @@ export function formatRichTextItem(item: RichTextItemResponse) {
 		const url = new URL(item.href, "https://www.notion.so")
 		text = `[${text}](${url.href})`
 	}
+
 	return text
 }

@@ -3,7 +3,10 @@ import { PageObjectResponse } from "@notionhq/client/build/src/api-endpoints"
 import { invariant } from "es-toolkit"
 import * as yaml from "yaml"
 import { formatBlockChildren } from "./notion-block.ts"
-import { formatRichText } from "./notion-rich-text.ts"
+import {
+	formatRichText,
+	type FormatRichTextItemOptions,
+} from "./notion-rich-text.ts"
 import { compactJoin, prettify } from "./utils.ts"
 
 const pageCache = new Map<string, PageObjectResponse>()
@@ -55,13 +58,14 @@ export async function formatPage(
 export async function flattenPageProperty(
 	notion: Client,
 	property: PageObjectResponse["properties"][string],
+	options?: FormatRichTextItemOptions,
 ): Promise<string> {
 	if (property.type === "title") {
-		return formatRichText(property.title)
+		return formatRichText(property.title, options)
 	}
 
 	if (property.type === "rich_text") {
-		return formatRichText(property.rich_text)
+		return formatRichText(property.rich_text, options)
 	}
 
 	if (property.type === "select") {
@@ -99,13 +103,15 @@ async function getRelationTitle(
 export async function flattenPageProperties(
 	notion: Client,
 	item: PageObjectResponse,
+	options?: FormatRichTextItemOptions,
 ): Promise<Record<string, string>> {
 	return Object.fromEntries(
 		await Array.fromAsync(
 			Object.entries(item.properties),
 			async ([name, property]) => [
 				name,
-				await flattenPageProperty(notion, property),
+
+				await flattenPageProperty(notion, property, options),
 			],
 		),
 	)

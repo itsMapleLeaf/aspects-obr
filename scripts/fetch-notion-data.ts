@@ -100,7 +100,9 @@ async function saveDatabases(page: PageObjectResponse) {
 				database_id: block.id,
 			})) {
 				invariant(isFullPage(row), `expected full page: ${prettify(row)}`)
-				const rowObject = await flattenPageProperties(notion, row)
+				const rowObject = await flattenPageProperties(notion, row, {
+					asPlainText: true,
+				})
 				rows.push(mapKeys(rowObject, (_value, key) => camelCase(key)))
 			}
 		} catch (error) {
