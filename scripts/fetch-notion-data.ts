@@ -86,6 +86,7 @@ async function saveDatabases(page: PageObjectResponse) {
 		// technically there can be different databases with the same name,
 		// but for now we don't care
 		if (databases.has(title)) {
+			console.info(`Already fetched ${block.child_database.title}, skipping`)
 			continue
 		}
 
